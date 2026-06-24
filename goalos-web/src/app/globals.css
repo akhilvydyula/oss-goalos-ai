@@ -280,3 +280,14 @@ body {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+.goalos-tilt-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goalos-tilt-3d {
+    transform: none !important;
+  }
+}

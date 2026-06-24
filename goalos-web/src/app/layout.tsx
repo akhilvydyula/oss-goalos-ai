@@ -12,8 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const isGithubPages = process.env.GITHUB_PAGES === "true";
-const assetPrefix = isGithubPages ? "/goalos-ai" : "";
+const assetPrefix = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export const metadata: Metadata = {
   title: "GoalOS AI — Turn screen time into goal time",

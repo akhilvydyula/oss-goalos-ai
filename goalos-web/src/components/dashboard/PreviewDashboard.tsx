@@ -1,6 +1,8 @@
 import type { UserState, ScoreBreakdown, CoachRecommendation } from "@/lib/types";
 import { AppIcon } from "@/components/ui/AppIcon";
-import { AlignmentGauge, Sparkline, BarChart, DayLabels } from "@/components/ui/MiniCharts";
+import { AlignmentGauge3D } from "@/components/three/lazy";
+import { Sparkline, BarChart, DayLabels } from "@/components/ui/MiniCharts";
+import { TiltCard3D } from "@/components/ui/TiltCard3D";
 import { formatMinutes, totalScreenMinutes, chartSeries, formatDelta } from "@/lib/demo-data";
 import { focusMinutesToday, focusMinutesWeekBars, sprintsTodayCount } from "@/lib/app-metrics";
 import { ScoreLabel } from "@/components/ui/AppIcon";
@@ -58,9 +60,9 @@ export function MobileDashboard({
   return (
     <div className="space-y-4 pb-2">
       {/* Alignment Score */}
-      <div className="goalos-card goalos-card-glow p-5">
+      <TiltCard3D className="goalos-card goalos-card-glow p-5">
         <div className="flex items-center gap-4">
-          <AlignmentGauge score={score.total} size="lg" />
+          <AlignmentGauge3D score={score.total} size="lg" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[#2be7a8] shadow-[0_0_8px_#2be7a8]" />
@@ -75,7 +77,7 @@ export function MobileDashboard({
             </p>
           </div>
         </div>
-      </div>
+      </TiltCard3D>
 
       {/* Screen Time */}
       <div className="goalos-card p-5">
@@ -241,12 +243,12 @@ export function WebDashboard({
     <div className="space-y-5">
       {/* Hero row */}
       <div className="grid gap-5 lg:grid-cols-5">
-        <div className="goalos-card goalos-card-glow p-6 lg:col-span-3">
+        <TiltCard3D className="goalos-card goalos-card-glow p-6 lg:col-span-3">
           <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
             Goal Alignment Score
           </p>
           <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
-            <AlignmentGauge score={score.total} size="lg" />
+            <AlignmentGauge3D score={score.total} size="lg" />
             <div className="flex-1 space-y-4">
               <div>
                 <ScoreLabel score={score.total} />
@@ -285,9 +287,9 @@ export function WebDashboard({
               </div>
             </div>
           </div>
-        </div>
+        </TiltCard3D>
 
-        <div className="goalos-card p-6 lg:col-span-2">
+        <TiltCard3D className="goalos-card p-6 lg:col-span-2">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-[#68a7ff]" />
             <p className="text-xs font-semibold uppercase tracking-wider text-[#68a7ff]">
@@ -319,45 +321,53 @@ export function WebDashboard({
               Ask Coach
             </button>
           </div>
-        </div>
+        </TiltCard3D>
       </div>
 
       {/* Metrics row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <MetricTile
-          label="Goals Progress"
-          value={`${roadmapPct}%`}
-          delta={roadmapPct === 0 ? "Complete sprints to advance" : `${state.roadmap?.filter((m) => m.completed).length ?? 0} milestones done`}
-          positive={roadmapPct > 0}
-          data={weekTrend.length >= 2 ? weekTrend : [roadmapPct, roadmapPct]}
-          icon={<TrendingUp className="h-4 w-4" />}
-        />
-        <MetricTile
-          label="Focus Sprints"
-          value={String(sprintsToday)}
-          delta={sprintsToday === 0 ? "None yet today" : `${sprintsToday} completed today`}
-          positive={sprintsToday > 0}
-          data={focusWeekBars}
-          icon={<CheckCircle2 className="h-4 w-4" />}
-          color="#68a7ff"
-        />
-        <MetricTile
-          label="Focus Time"
-          value={focusTime}
-          delta={focusMinsToday === 0 ? "Start a sprint" : "Logged today"}
-          positive={focusMinsToday > 0}
-          data={focusWeekBars}
-          icon={<Clock className="h-4 w-4" />}
-          color="#68a7ff"
-        />
-        <MetricTile
-          label="Alignment Score"
-          value={`${habitScore}`}
-          delta={formatDelta(trendDelta, "vs last check-in")}
-          positive={trendDelta === null || trendDelta >= 0}
-          data={weekTrend}
-          icon={<Flame className="h-4 w-4" />}
-        />
+        <TiltCard3D>
+          <MetricTile
+            label="Goals Progress"
+            value={`${roadmapPct}%`}
+            delta={roadmapPct === 0 ? "Complete sprints to advance" : `${state.roadmap?.filter((m) => m.completed).length ?? 0} milestones done`}
+            positive={roadmapPct > 0}
+            data={weekTrend.length >= 2 ? weekTrend : [roadmapPct, roadmapPct]}
+            icon={<TrendingUp className="h-4 w-4" />}
+          />
+        </TiltCard3D>
+        <TiltCard3D>
+          <MetricTile
+            label="Focus Sprints"
+            value={String(sprintsToday)}
+            delta={sprintsToday === 0 ? "None yet today" : `${sprintsToday} completed today`}
+            positive={sprintsToday > 0}
+            data={focusWeekBars}
+            icon={<CheckCircle2 className="h-4 w-4" />}
+            color="#68a7ff"
+          />
+        </TiltCard3D>
+        <TiltCard3D>
+          <MetricTile
+            label="Focus Time"
+            value={focusTime}
+            delta={focusMinsToday === 0 ? "Start a sprint" : "Logged today"}
+            positive={focusMinsToday > 0}
+            data={focusWeekBars}
+            icon={<Clock className="h-4 w-4" />}
+            color="#68a7ff"
+          />
+        </TiltCard3D>
+        <TiltCard3D>
+          <MetricTile
+            label="Alignment Score"
+            value={`${habitScore}`}
+            delta={formatDelta(trendDelta, "vs last check-in")}
+            positive={trendDelta === null || trendDelta >= 0}
+            data={weekTrend}
+            icon={<Flame className="h-4 w-4" />}
+          />
+        </TiltCard3D>
       </div>
 
       {/* Bottom row */}

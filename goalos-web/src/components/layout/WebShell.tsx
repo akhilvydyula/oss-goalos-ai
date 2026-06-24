@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { Monitor, Smartphone } from "lucide-react";
+import { AmbientScene3D } from "@/components/three/lazy";
 
 export function WebShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="goalos-page-bg goalos-app-viewport">
+    <div className="goalos-page-bg goalos-app-viewport relative">
+      <AmbientScene3D className="opacity-50" />
       <div className="absolute right-4 top-4 z-30 hidden lg:block">
         <DemoSwitcher active="web" />
       </div>
-      <div className="flex h-full min-h-0">{children}</div>
+      <div className="relative z-10 flex h-full min-h-0">{children}</div>
     </div>
   );
 }

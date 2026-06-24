@@ -9,17 +9,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/akhilvydyula/goalos-ai/actions/workflows/ci.yml"><img src="https://github.com/akhilvydyula/goalos-ai/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="https://akhilvydyula.github.io/goalos-ai/"><img src="https://img.shields.io/badge/demo-live-2BE7A8?style=flat&logo=github" alt="Live Demo" /></a>
+  <a href="https://github.com/akhilvydyula/oss-goalos-ai/actions/workflows/ci.yml"><img src="https://github.com/akhilvydyula/oss-goalos-ai/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://akhilvydyula.github.io/oss-goalos-ai/"><img src="https://img.shields.io/badge/demo-live-2BE7A8?style=flat&logo=github" alt="Live Demo" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
-  <a href="https://github.com/akhilvydyula/goalos-ai/issues"><img src="https://img.shields.io/github/issues/akhilvydyula/goalos-ai" alt="Issues" /></a>
+  <a href="https://github.com/akhilvydyula/oss-goalos-ai/issues"><img src="https://img.shields.io/github/issues/akhilvydyula/oss-goalos-ai" alt="Issues" /></a>
 </p>
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
-  <a href="https://akhilvydyula.github.io/goalos-ai/">Live Demo</a> ·
-  <a href="https://akhilvydyula.github.io/goalos-ai/web/">Web</a> ·
-  <a href="https://akhilvydyula.github.io/goalos-ai/mobile/">Mobile</a> ·
+  <a href="https://akhilvydyula.github.io/oss-goalos-ai/">Live Demo</a> ·
+  <a href="https://akhilvydyula.github.io/oss-goalos-ai/web/">Web</a> ·
+  <a href="https://akhilvydyula.github.io/oss-goalos-ai/mobile/">Mobile</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="docs/DEPLOYMENT.md">Deploy</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
@@ -71,8 +71,8 @@ GoalOS AI helps you align daily screen time with your goals through scoring, AI 
 ### Web (fastest)
 
 ```bash
-git clone https://github.com/akhilvydyula/goalos-ai.git
-cd goalos-ai
+git clone https://github.com/akhilvydyula/oss-goalos-ai.git
+cd oss-goalos-ai
 npm run dev
 ```
 
@@ -131,10 +131,10 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## 🔗 Links
 
-- **Live demo:** https://akhilvydyula.github.io/goalos-ai/
-- **Web demo:** https://akhilvydyula.github.io/goalos-ai/web/
-- **Mobile demo:** https://akhilvydyula.github.io/goalos-ai/mobile/
-- **Repository:** https://github.com/akhilvydyula/goalos-ai
-- **Issues:** https://github.com/akhilvydyula/goalos-ai/issues
+- **Live demo:** https://akhilvydyula.github.io/oss-goalos-ai/
+- **Web demo:** https://akhilvydyula.github.io/oss-goalos-ai/web/
+- **Mobile demo:** https://akhilvydyula.github.io/oss-goalos-ai/mobile/
+- **Repository:** https://github.com/akhilvydyula/oss-goalos-ai
+- **Issues:** https://github.com/akhilvydyula/oss-goalos-ai/issues
 - **Web app docs:** [goalos-web/README.md](./goalos-web/README.md)
 - **Android docs:** [goalos-android/README.md](./goalos-android/README.md)
