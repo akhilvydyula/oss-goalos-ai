@@ -33,6 +33,7 @@ jobs:
           name: goalos-web-build
           path: goalos-web/.next
           retention-days: 30
+          if-no-files-found: error
 
   release-android:
     name: Build Android release APK
