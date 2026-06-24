@@ -7,7 +7,7 @@ const left: { id: TabId; label: string; icon: typeof Home }[] = [
 ];
 
 const right: { id: TabId; label: string; icon: typeof Home }[] = [
-  { id: "coach", label: "Focus", icon: Zap },
+  { id: "coach", label: "Coach", icon: Zap },
   { id: "insights", label: "Insights", icon: BarChart3 },
 ];
 

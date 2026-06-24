@@ -1,7 +1,8 @@
 import type { UserState, ScoreBreakdown, CoachRecommendation } from "@/lib/types";
 import { AppIcon } from "@/components/ui/AppIcon";
 import { AlignmentGauge, Sparkline, BarChart, DayLabels } from "@/components/ui/MiniCharts";
-import { formatMinutes, totalScreenMinutes, chartSeries, formatDelta, percentChange } from "@/lib/demo-data";
+import { formatMinutes, totalScreenMinutes, chartSeries, formatDelta } from "@/lib/demo-data";
+import { focusMinutesToday, focusMinutesWeekBars, sprintsTodayCount } from "@/lib/app-metrics";
 import { ScoreLabel } from "@/components/ui/AppIcon";
 import {
   Sparkles,
@@ -34,24 +35,24 @@ export function MobileDashboard({
   coach,
   onStartSprint,
   onViewAllApps,
+  onIntentGate,
+  onLogUsage,
 }: {
   state: UserState;
   score: ScoreBreakdown;
   coach: CoachRecommendation;
   onStartSprint: () => void;
   onViewAllApps?: () => void;
+  onIntentGate?: (appId: string) => void;
+  onLogUsage?: (appId: string, minutes: number) => void;
 }) {
   const total = totalScreenMinutes(state.apps);
   const weekBars = chartSeries(state.weeklyHistory);
   const topApps = [...state.apps].sort((a, b) => b.minutesToday - a.minutesToday).slice(0, 5);
   const usedApps = topApps.filter((a) => a.minutesToday > 0);
   const maxApp = usedApps[0]?.minutesToday ?? 1;
-  const scoreDelta = percentChange(
-    state.weeklyHistory[state.weeklyHistory.length - 1] ?? 0,
-    state.weeklyHistory[state.weeklyHistory.length - 2] ?? 0
-  );
   const screenDeltaLabel =
-    total === 0 ? "Starting today" : formatDelta(scoreDelta, "vs last check-in");
+    total === 0 ? "Starting today" : `${usedApps.length} app${usedApps.length === 1 ? "" : "s"} tracked`;
   const isFresh = total === 0 && state.focusSprints.length === 0;
 
   return (
@@ -93,6 +94,7 @@ export function MobileDashboard({
         <div className="mt-4">
           <BarChart data={weekBars} labels={WEEK_DAYS} highlightIndex={todayIndex} />
           <DayLabels labels={WEEK_DAYS} activeIndex={todayIndex} />
+          <p className="mt-1 text-[10px] text-zinc-600">Score check-ins (not screen minutes)</p>
         </div>
       </div>
 
@@ -143,7 +145,23 @@ export function MobileDashboard({
                     />
                   </div>
                 </div>
-                <button type="button" className="text-zinc-600" aria-label="Options">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      (app.classification === "mixed" || app.classification === "distracting") &&
+                      onIntentGate
+                    ) {
+                      onIntentGate(app.id);
+                    } else if (onLogUsage) {
+                      onLogUsage(app.id, 15);
+                    } else {
+                      onViewAllApps?.();
+                    }
+                  }}
+                  className="text-zinc-500 hover:text-zinc-300"
+                  aria-label={`Actions for ${app.name}`}
+                >
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
               </div>
@@ -192,19 +210,19 @@ export function WebDashboard({
   onOpenCoach: () => void;
 }) {
   const roadmapPct = state.roadmapProgress;
-  const focusMins = state.focusSprints.reduce((s, sp) => s + sp.durationMinutes, 0);
-  const focusH = Math.floor(focusMins / 60);
-  const focusM = focusMins % 60;
-  const focusTime = focusMins === 0 ? "0m" : focusH > 0 ? `${focusH}h ${focusM}m` : `${focusM}m`;
+  const focusMinsToday = focusMinutesToday(state.focusSprints);
+  const focusH = Math.floor(focusMinsToday / 60);
+  const focusM = focusMinsToday % 60;
+  const focusTime = focusMinsToday === 0 ? "0m" : focusH > 0 ? `${focusH}h ${focusM}m` : `${focusM}m`;
   const weekTrend = chartSeries(state.weeklyHistory);
   const trendDelta =
     state.weeklyHistory.length >= 2
       ? state.weeklyHistory[state.weeklyHistory.length - 1] -
         state.weeklyHistory[state.weeklyHistory.length - 2]
       : null;
-  const roadmapDelta = percentChange(roadmapPct, Math.max(0, roadmapPct - 8));
-  const sprintDelta = state.focusSprints.length;
+  const sprintsToday = sprintsTodayCount(state.focusSprints);
   const habitScore = score.total;
+  const focusWeekBars = focusMinutesWeekBars(state.focusSprints);
 
   const goals = [
     {
@@ -218,9 +236,6 @@ export function WebDashboard({
       color: "from-[#68a7ff] to-[#4d8fff]",
     })) ?? []),
   ].slice(0, 3);
-
-  const weekBars = chartSeries(state.weeklyHistory);
-  const weekFocusTotal = focusMins;
 
   return (
     <div className="space-y-5">
@@ -282,8 +297,8 @@ export function WebDashboard({
           <p className="mt-1 text-[10px] font-medium uppercase text-zinc-500">Next Best Action</p>
           <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
             <div className="flex items-center gap-2">
-              <span className="rounded-md bg-[#2be7a8]/20 px-2 py-0.5 text-[10px] font-semibold uppercase text-[#2be7a8]">
-                High Impact
+              <span className="rounded-md bg-[#68a7ff]/20 px-2 py-0.5 text-[10px] font-semibold uppercase text-[#68a7ff]">
+                Coach pick
               </span>
             </div>
             <p className="mt-2 font-medium text-zinc-100">{coach.nextAction.split(".")[0]}.</p>
@@ -312,26 +327,26 @@ export function WebDashboard({
         <MetricTile
           label="Goals Progress"
           value={`${roadmapPct}%`}
-          delta={formatDelta(roadmapDelta, "from last week")}
-          positive={roadmapDelta === null || roadmapDelta >= 0}
-          data={weekTrend}
+          delta={roadmapPct === 0 ? "Complete sprints to advance" : `${state.roadmap?.filter((m) => m.completed).length ?? 0} milestones done`}
+          positive={roadmapPct > 0}
+          data={weekTrend.length >= 2 ? weekTrend : [roadmapPct, roadmapPct]}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <MetricTile
           label="Focus Sprints"
-          value={String(sprintDelta)}
-          delta={sprintDelta === 0 ? "None yet today" : `${sprintDelta} completed`}
-          positive={sprintDelta > 0}
-          data={weekTrend}
+          value={String(sprintsToday)}
+          delta={sprintsToday === 0 ? "None yet today" : `${sprintsToday} completed today`}
+          positive={sprintsToday > 0}
+          data={focusWeekBars}
           icon={<CheckCircle2 className="h-4 w-4" />}
           color="#68a7ff"
         />
         <MetricTile
           label="Focus Time"
           value={focusTime}
-          delta={focusMins === 0 ? "Start a sprint" : "Logged today"}
-          positive={focusMins > 0}
-          data={weekBars}
+          delta={focusMinsToday === 0 ? "Start a sprint" : "Logged today"}
+          positive={focusMinsToday > 0}
+          data={focusWeekBars}
           icon={<Clock className="h-4 w-4" />}
           color="#68a7ff"
         />
@@ -348,19 +363,8 @@ export function WebDashboard({
       {/* Bottom row */}
       <div className="grid gap-5 lg:grid-cols-2">
         <div className="goalos-card p-6">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-zinc-100">Goals Overview</h3>
-            <div className="flex gap-1 text-[11px]">
-              {["Active", "Quarterly", "Yearly"].map((t, i) => (
-                <span
-                  key={t}
-                  className={`rounded-lg px-2.5 py-1 ${i === 0 ? "bg-white/10 text-zinc-200" : "text-zinc-500"}`}
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
+          <h3 className="font-semibold text-zinc-100">Goals Overview</h3>
+          <p className="mt-1 text-xs text-zinc-500">Active goal and roadmap milestones</p>
           <div className="mt-5 space-y-4">
             {goals.map((g) => (
               <div key={g.title}>
@@ -381,6 +385,7 @@ export function WebDashboard({
 
         <div className="goalos-card p-6">
           <h3 className="font-semibold text-zinc-100">Weekly Focus</h3>
+          <p className="mt-1 text-xs text-zinc-500">Focus minutes by day (today only has live data)</p>
           <div className="mt-3 flex justify-between text-[11px] text-zinc-500">
             {WEEK_DAYS.map((d, i) => (
               <span
@@ -393,13 +398,11 @@ export function WebDashboard({
               </span>
             ))}
           </div>
-          <p className="mt-4 text-xs text-zinc-500">Focus Time</p>
-          <p className="text-2xl font-bold text-zinc-50">
-            {focusMins === 0 ? "0m" : `${Math.floor(weekFocusTotal / 60)}h ${weekFocusTotal % 60}m`}
-          </p>
+          <p className="mt-4 text-xs text-zinc-500">Focus time today</p>
+          <p className="text-2xl font-bold text-zinc-50">{focusTime}</p>
           <div className="mt-3">
             <BarChart
-              data={weekBars.map((v) => Math.max(v / 10, 0.5))}
+              data={focusWeekBars}
               labels={WEEK_DAYS}
               highlightIndex={todayIndex}
             />

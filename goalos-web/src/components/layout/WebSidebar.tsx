@@ -1,58 +1,38 @@
-import type { TabId } from "@/lib/types";
+import type { TabId, FocusSprint } from "@/lib/types";
 import {
   LayoutDashboard,
   Target,
-  FolderKanban,
-  CheckSquare,
-  Clock,
-  Repeat,
-  FileText,
   BarChart3,
   Sparkles,
-  BookOpen,
   Settings,
   Flame,
 } from "lucide-react";
+import { sprintsTodayCount } from "@/lib/app-metrics";
 
-type NavItem = {
-  id: TabId | null;
-  label: string;
-  icon: typeof LayoutDashboard;
-};
-
-const nav: NavItem[] = [
+const nav: { id: TabId; label: string; icon: typeof LayoutDashboard }[] = [
   { id: "today", label: "Dashboard", icon: LayoutDashboard },
   { id: "goal", label: "Goals", icon: Target },
-  { id: "goal", label: "Projects", icon: FolderKanban },
-  { id: "today", label: "Tasks", icon: CheckSquare },
-  { id: "insights", label: "Time", icon: Clock },
-  { id: "insights", label: "Habits", icon: Repeat },
-  { id: "insights", label: "Reviews", icon: FileText },
-  { id: "insights", label: "Insights", icon: BarChart3 },
   { id: "coach", label: "AI Coach", icon: Sparkles },
-  { id: null, label: "Resources", icon: BookOpen },
+  { id: "insights", label: "Insights", icon: BarChart3 },
   { id: "you", label: "Settings", icon: Settings },
 ];
-
-const PRIMARY_NAV: Record<TabId, string> = {
-  today: "Dashboard",
-  goal: "Goals",
-  coach: "AI Coach",
-  insights: "Insights",
-  you: "Settings",
-};
 
 export function WebSidebar({
   active,
   onChange,
   displayName,
-  streak,
+  focusSprints,
+  focusSprintOpen,
 }: {
   active: TabId;
   onChange: (tab: TabId) => void;
   displayName?: string;
-  streak?: number;
+  focusSprints?: FocusSprint[];
+  focusSprintOpen?: boolean;
 }) {
+  const sprintsToday = sprintsTodayCount(focusSprints ?? []);
+  const focusActive = focusSprintOpen || sprintsToday > 0;
+
   return (
     <aside className="goalos-sidebar hidden w-56 shrink-0 flex-col lg:flex">
       <div className="flex items-center gap-2.5 px-4 py-5">
@@ -63,22 +43,17 @@ export function WebSidebar({
       </div>
 
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-2">
-          {nav.map((item, i) => {
-          const isActive =
-            item.id !== null && active === item.id && item.label === PRIMARY_NAV[active];
-          const disabled = !item.id || item.label !== PRIMARY_NAV[item.id];
+        {nav.map((item) => {
+          const isActive = active === item.id;
           return (
             <button
-              key={`${item.label}-${i}`}
+              key={item.id}
               type="button"
-              onClick={() => item.id && onChange(item.id)}
-              disabled={disabled}
+              onClick={() => onChange(item.id)}
               className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                 isActive
                   ? "bg-gradient-to-r from-[#2be7a8]/20 to-[#68a7ff]/10 text-[#2be7a8] shadow-sm ring-1 ring-[#2be7a8]/15"
-                  : !disabled
-                    ? "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
-                    : "cursor-default text-zinc-600 opacity-60"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
               }`}
             >
               <item.icon className="h-4 w-4 shrink-0" />
@@ -98,15 +73,17 @@ export function WebSidebar({
               {displayName ?? "User"}
             </p>
             <p className="flex items-center gap-1 text-[11px] text-[#2be7a8]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#2be7a8]" />
-              Focus Mode
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${focusActive ? "bg-[#2be7a8] animate-pulse" : "bg-zinc-600"}`}
+              />
+              {focusSprintOpen ? "Sprint in progress" : focusActive ? "Focus mode on" : "Ready to focus"}
             </p>
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#2be7a8]/10 px-3 py-2.5">
           <Flame className="h-4 w-4 text-[#2be7a8]" />
           <span className="text-xs font-medium text-zinc-300">
-            Focus sprints today: <span className="text-[#2be7a8]">{streak ?? 0}</span>
+            Sprints today: <span className="text-[#2be7a8]">{sprintsToday}</span>
           </span>
         </div>
       </div>

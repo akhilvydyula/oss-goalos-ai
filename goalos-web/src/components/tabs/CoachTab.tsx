@@ -59,6 +59,7 @@ function AiStatusBadge({
 
 export function CoachTab({
   state,
+  score,
   coach,
   messages,
   thinking,
@@ -68,6 +69,7 @@ export function CoachTab({
   onRefresh,
 }: {
   state: UserState;
+  score: number;
   coach: CoachRecommendation;
   messages: { id: string; role: "coach" | "user"; text: string; timestamp: string }[];
   thinking: boolean;
@@ -87,7 +89,7 @@ export function CoachTab({
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const actions = suggestedActions(state, coach);
-  const prompts = suggestedPrompts(state);
+  const prompts = suggestedPrompts(state, score);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

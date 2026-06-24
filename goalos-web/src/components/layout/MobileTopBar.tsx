@@ -1,4 +1,6 @@
 import type { TabId } from "@/lib/types";
+import { Search } from "lucide-react";
+import { NotificationBellButton } from "@/components/ui/NotificationsPanel";
 
 const MODE_BADGE: Record<"demo" | "live", { label: string; className: string }> = {
   demo: { label: "Sample data", className: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
@@ -9,10 +11,16 @@ export function MobileTopBar({
   displayName,
   demoMode,
   onProfile,
+  onOpenSearch,
+  onOpenNotifications,
+  unreadNotifications = 0,
 }: {
   displayName?: string;
   demoMode?: boolean;
   onProfile?: () => void;
+  onOpenSearch?: () => void;
+  onOpenNotifications?: () => void;
+  unreadNotifications?: number;
 }) {
   const mode = demoMode ? MODE_BADGE.demo : MODE_BADGE.live;
 
@@ -20,6 +28,23 @@ export function MobileTopBar({
     <header className="flex shrink-0 items-center justify-between px-4 pb-2 pt-3">
       <h1 className="text-lg font-bold tracking-tight text-zinc-50">GoalOS AI</h1>
       <div className="flex items-center gap-2">
+        {onOpenSearch && (
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-zinc-400 transition hover:text-zinc-200"
+            aria-label="Search GoalOS"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+        )}
+        {onOpenNotifications && (
+          <NotificationBellButton
+            compact
+            unread={unreadNotifications}
+            onClick={onOpenNotifications}
+          />
+        )}
         <span
           className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold ${mode.className}`}
         >
@@ -40,7 +65,7 @@ export function MobileTopBar({
 const tabs: { id: TabId; label: string }[] = [
   { id: "today", label: "Dashboard" },
   { id: "goal", label: "Goals" },
-  { id: "coach", label: "Focus" },
+  { id: "coach", label: "Coach" },
   { id: "insights", label: "Insights" },
 ];
 

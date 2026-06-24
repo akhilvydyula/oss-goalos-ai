@@ -40,7 +40,8 @@ export function IntentGateModal({
           </button>
         </div>
         <p className="mt-3 text-sm text-zinc-500">
-          Pause before unconscious scrolling. Your choice affects your Goal Alignment Score.
+          Pause before unconscious scrolling. Misaligned choices log +10 min to this app and lower
+          your score.
         </p>
 
         <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
@@ -96,10 +97,13 @@ export function IntentGateModal({
               className={`rounded-xl border px-3 py-3 text-left text-sm transition ${
                 opt.aligned
                   ? "border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20"
-                  : "border-white/10 bg-white/5 hover:bg-white/10"
+                  : "border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10"
               }`}
             >
               {opt.label}
+              {!opt.aligned && (
+                <span className="mt-1 block text-[10px] text-rose-300/80">+10m logged</span>
+              )}
             </button>
           ))}
         </div>

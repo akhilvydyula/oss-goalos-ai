@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import type { UserGoal } from "@/lib/types";
-import { X, Play, CheckCircle } from "lucide-react";
+import { sprintScoreBoost } from "@/lib/app-metrics";
+import { X, Play, CheckCircle, Pause, Square } from "lucide-react";
 
 const DURATIONS = [15, 25, 45, 60];
 
@@ -34,6 +35,7 @@ export function FocusSprintModal({
   const [done, setDone] = useState(false);
 
   const sprintTitle = initialTitle ?? defaultTitle;
+  const scoreBoost = sprintScoreBoost(duration);
 
   useEffect(() => {
     if (!running || done) return;
@@ -56,6 +58,21 @@ export function FocusSprintModal({
     setDone(false);
   };
 
+  const pause = () => setRunning(false);
+
+  const endEarly = () => {
+    if (!window.confirm("End this sprint without completing? Progress won't be saved.")) return;
+    onClose();
+  };
+
+  const handleClose = () => {
+    if (running && !done) {
+      endEarly();
+      return;
+    }
+    onClose();
+  };
+
   const mins = Math.floor(secondsLeft / 60);
   const secs = secondsLeft % 60;
 
@@ -66,7 +83,7 @@ export function FocusSprintModal({
           <p className="text-xs font-medium uppercase tracking-wide text-[#2be7a8]/80">
             Focus Sprint
           </p>
-          <button type="button" onClick={onClose} className="text-zinc-500">
+          <button type="button" onClick={handleClose} className="text-zinc-500 hover:text-zinc-300">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -75,7 +92,9 @@ export function FocusSprintModal({
           <div className="py-8 text-center">
             <CheckCircle className="mx-auto h-16 w-16 text-emerald-400" />
             <h2 className="mt-4 text-2xl font-semibold">Sprint Complete!</h2>
-            <p className="mt-2 text-sm text-zinc-500">+5 to your Goal Alignment Score</p>
+            <p className="mt-2 text-sm text-zinc-500">
+              +{scoreBoost} alignment boost · {duration}m logged to your goal app
+            </p>
             <button
               type="button"
               onClick={() => onComplete(sprintTitle, duration)}
@@ -91,12 +110,28 @@ export function FocusSprintModal({
               {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
             </p>
             <p className="mt-4 text-sm text-zinc-500 animate-pulse-soft">Stay focused...</p>
+            <div className="mt-6 flex gap-2">
+              <button
+                type="button"
+                onClick={pause}
+                className="goalos-btn-secondary flex flex-1 items-center justify-center gap-2 py-3"
+              >
+                <Pause className="h-4 w-4" /> Pause
+              </button>
+              <button
+                type="button"
+                onClick={endEarly}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-rose-500/30 py-3 text-sm text-rose-300"
+              >
+                <Square className="h-4 w-4" /> End
+              </button>
+            </div>
           </div>
         ) : (
           <>
             <h2 className="mt-2 text-xl font-semibold">{sprintTitle}</h2>
             <p className="mt-2 text-sm text-zinc-500">
-              Time-boxed goal action. Complete to boost your score and roadmap progress.
+              Time-boxed goal action. Complete for +{scoreBoost} alignment and roadmap progress.
             </p>
             <div className="mt-6 flex gap-2">
               {DURATIONS.map((d) => (

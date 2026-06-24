@@ -169,11 +169,12 @@ export function openingMessages(
   return messages;
 }
 
-export function suggestedPrompts(state: UserState): string[] {
-  const lastScore = state.weeklyHistory[state.weeklyHistory.length - 1] ?? 72;
+export function suggestedPrompts(state: UserState, scoreTotal?: number): string[] {
+  const lastScore = scoreTotal ?? state.weeklyHistory[state.weeklyHistory.length - 1];
+  const scoreLabel = lastScore !== undefined ? String(lastScore) : "your current";
   return [
     "What should I do tomorrow to improve my score?",
-    `Why is my score ${lastScore} today?`,
+    `Why is my score ${scoreLabel} today?`,
     "Help me reduce night scrolling",
     "Start a focus sprint plan",
   ];
@@ -183,9 +184,8 @@ export function suggestedActions(state: UserState, coach: CoachRecommendation): 
   const focusWindow = state.profile?.focusWindow.split("(")[0]?.trim() ?? "8 AM";
   const distractor = topDistractor(state.apps);
   return [
-    `Create ${focusWindow} sprint`,
-    distractor ? `Block ${distractor.name} after 10 PM` : null,
-    "Add learning timer",
+    `Start ${focusWindow} focus sprint`,
+    distractor ? `Open intent gate for ${distractor.name}` : null,
     "Show tomorrow plan",
     coach.nextAction.includes("sprint") ? null : "Start focus sprint",
   ].filter((x): x is string => Boolean(x));

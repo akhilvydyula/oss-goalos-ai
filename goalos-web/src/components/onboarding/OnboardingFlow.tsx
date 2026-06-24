@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { UserState } from "@/lib/types";
+import type { OnboardingStep, UserState } from "@/lib/types";
 import { TAGLINE, PRIVACY_PROMISE } from "@/lib/constants";
 import { deriveProductivityProfile, calculateGoalAlignmentScore } from "@/lib/scoring";
 import { createInstantDemoState } from "@/lib/demo-presets";
@@ -12,7 +12,12 @@ import { GoalSetupStep } from "./GoalSetupStep";
 import { DnaQuizStep } from "./DnaQuizStep";
 import { Shield, Sparkles, Zap } from "lucide-react";
 
-type Step = "welcome" | "goal" | "dna" | "privacy";
+function resolveStep(state: UserState): OnboardingStep {
+  if (state.onboardingStep) return state.onboardingStep;
+  if (state.goal && state.dna) return "privacy";
+  if (state.goal) return "dna";
+  return "welcome";
+}
 
 export function OnboardingFlow({
   state,
@@ -21,8 +26,13 @@ export function OnboardingFlow({
   state: UserState;
   persist: (s: UserState) => void;
 }) {
-  const [step, setStep] = useState<Step>("welcome");
-  const [displayName, setDisplayName] = useState("");
+  const [step, setStep] = useState<OnboardingStep>(() => resolveStep(state));
+  const [displayName, setDisplayName] = useState(state.displayName ?? "");
+
+  const goTo = (next: OnboardingStep, patch: Partial<UserState> = {}) => {
+    setStep(next);
+    persist({ ...state, ...patch, onboardingStep: next });
+  };
 
   if (step === "welcome") {
     return (
@@ -66,7 +76,8 @@ export function OnboardingFlow({
           <button
             type="button"
             onClick={() => {
-              persist(createScratchState());
+              const scratch = createScratchState();
+              persist({ ...scratch, onboardingStep: "goal" });
               setStep("goal");
             }}
             className="goalos-btn-primary w-full py-4 text-center"
@@ -82,7 +93,7 @@ export function OnboardingFlow({
             Explore demo instantly
           </button>
           <p className="text-center text-[11px] text-zinc-600">
-            Demo loads sample data — no signup, runs in your browser
+            Demo loads sample data — you can still log time and run sprints
           </p>
         </div>
       </div>
@@ -92,11 +103,8 @@ export function OnboardingFlow({
   if (step === "goal") {
     return (
       <GoalSetupStep
-        onBack={() => setStep("welcome")}
-        onComplete={(goal) => {
-          persist({ ...state, goal });
-          setStep("dna");
-        }}
+        onBack={() => goTo("welcome")}
+        onComplete={(goal) => goTo("dna", { goal })}
       />
     );
   }
@@ -104,17 +112,15 @@ export function OnboardingFlow({
   if (step === "dna") {
     return (
       <DnaQuizStep
-        onBack={() => setStep("goal")}
+        onBack={() => goTo("goal")}
         onComplete={(dna) => {
           const profile = deriveProductivityProfile(dna);
-          persist({
-            ...state,
+          goTo("privacy", {
             dna,
             profile,
             energyToday: dna.energyLevel,
             moodToday: Math.min(5, dna.energyLevel + 1),
           });
-          setStep("privacy");
         }}
       />
     );
@@ -167,6 +173,7 @@ export function OnboardingFlow({
             displayName: displayName.trim() || undefined,
             privacyAccepted: true,
             onboarded: true,
+            onboardingStep: undefined,
             ...(roadmap ? { roadmap } : {}),
           });
         }}

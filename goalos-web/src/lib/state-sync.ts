@@ -1,6 +1,18 @@
 import type { UserState } from "./types";
 import { calculateGoalAlignmentScore } from "./scoring";
 
+export function syncRoadmapCompletion(state: UserState): UserState {
+  if (!state.roadmap?.length) return state;
+  const perWeek = 100 / state.roadmap.length;
+  return {
+    ...state,
+    roadmap: state.roadmap.map((m, i) => ({
+      ...m,
+      completed: state.roadmapProgress >= Math.ceil((i + 1) * perWeek),
+    })),
+  };
+}
+
 /** Persist score snapshot when it changes — keeps charts honest. */
 export function withScoreSnapshot(state: UserState): UserState {
   const total = calculateGoalAlignmentScore({

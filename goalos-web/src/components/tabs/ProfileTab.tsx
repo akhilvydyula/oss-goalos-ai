@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { UserState, WeeklyReport } from "@/lib/types";
 import { PRIVACY_PROMISE, TAGLINE } from "@/lib/constants";
 import { exportState } from "@/lib/storage";
+import { sprintsTodayCount } from "@/lib/app-metrics";
 import { WeeklyIdentityCard } from "@/components/ui/WeeklyIdentityCard";
 import { MetricCard } from "@/components/ui/GoalOSComponents";
 import {
@@ -196,14 +197,25 @@ ${TAGLINE}`;
 
       {/* Vitals */}
       <div className="grid grid-cols-2 gap-3">
-        <MetricCard label="Energy today" value={`${state.energyToday}/5`} accent="positive" />
-        <MetricCard label="Mood today" value={`${state.moodToday}/5`} />
+        <VitalSlider
+          label="Energy today"
+          value={state.energyToday}
+          onChange={(v) => onUpdate({ energyToday: v })}
+        />
+        <VitalSlider
+          label="Mood today"
+          value={state.moodToday}
+          onChange={(v) => onUpdate({ moodToday: v })}
+        />
         <MetricCard
           label="Roadmap"
           value={`${state.roadmapProgress}%`}
           accent={state.roadmapProgress >= 50 ? "positive" : "default"}
         />
-        <MetricCard label="Focus sprints" value={`${state.focusSprints.length}`} />
+        <MetricCard
+          label="Sprints today"
+          value={`${sprintsTodayCount(state.focusSprints)}`}
+        />
       </div>
 
       {/* Productivity DNA */}
@@ -260,6 +272,32 @@ ${TAGLINE}`;
         <Share2 className="h-5 w-5" />
         {copied ? "Copied to clipboard!" : "Share Weekly Identity"}
       </button>
+    </div>
+  );
+}
+
+function VitalSlider({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <div className="goalos-card p-4">
+      <p className="text-[11px] text-zinc-500">{label}</p>
+      <p className="mt-1 text-xl font-bold text-zinc-50">{value}/5</p>
+      <input
+        type="range"
+        min={1}
+        max={5}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-3 w-full accent-[#2be7a8]"
+        aria-label={label}
+      />
     </div>
   );
 }

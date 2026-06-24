@@ -35,6 +35,8 @@ export type IntentReason =
 
 export type TabId = "today" | "goal" | "coach" | "insights" | "you";
 
+export type OnboardingStep = "welcome" | "goal" | "dna" | "privacy";
+
 export interface UserGoal {
   template: GoalTemplate;
   title: string;
@@ -161,5 +163,6 @@ export interface UserState {
   weeklyHistory: number[];
   coachMemory?: CoachMemory;
   demoMode?: boolean;
+  onboardingStep?: OnboardingStep;
   createdAt: string;
 }

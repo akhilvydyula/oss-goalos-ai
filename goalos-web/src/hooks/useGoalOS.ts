@@ -19,7 +19,8 @@ import {
   enrichWeeklyReport,
   type SprintPrefill,
 } from "@/lib/agent";
-import { addAppMinutes, primaryGoalAppId, withScoreSnapshot } from "@/lib/state-sync";
+import { addAppMinutes, primaryGoalAppId, syncRoadmapCompletion, withScoreSnapshot } from "@/lib/state-sync";
+import { sprintScoreBoost } from "@/lib/app-metrics";
 
 export function useGoalOS() {
   const [state, setState] = useState<UserState | null>(null);
@@ -30,7 +31,7 @@ export function useGoalOS() {
   const [coachThinking, setCoachThinking] = useState(false);
   const [sprintPrefill, setSprintPrefill] = useState<SprintPrefill | null>(null);
 
-  const webLLM = useWebLLM(activeTab === "coach");
+  const webLLM = useWebLLM(true);
 
   useEffect(() => {
     void Promise.resolve().then(() => setState(loadState()));
@@ -249,13 +250,13 @@ export function useGoalOS() {
         durationMinutes,
         startedAt: new Date(Date.now() - durationMinutes * 60000).toISOString(),
         completedAt: new Date().toISOString(),
-        scoreBoost: durationMinutes >= 45 ? 8 : durationMinutes >= 25 ? 5 : 3,
+        scoreBoost: sprintScoreBoost(durationMinutes),
       };
-      let nextState: UserState = {
+      let nextState: UserState = syncRoadmapCompletion({
         ...state,
         focusSprints: [...state.focusSprints, sprint],
         roadmapProgress: Math.min(100, state.roadmapProgress + 5),
-      };
+      });
       const goalAppId = primaryGoalAppId(nextState);
       if (goalAppId) {
         nextState = addAppMinutes(nextState, goalAppId, durationMinutes);
@@ -264,9 +265,8 @@ export function useGoalOS() {
       }
       persist(nextState);
       closeFocusSprint();
-      void sendCoachMessage(`I completed a ${durationMinutes}-minute focus sprint`);
     },
-    [state, persist, sendCoachMessage, closeFocusSprint]
+    [state, persist, closeFocusSprint]
   );
 
   return {

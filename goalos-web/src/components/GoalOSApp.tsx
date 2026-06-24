@@ -1,10 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useGoalOS } from "@/hooks/useGoalOS";
 import { OnboardingFlow } from "./onboarding/OnboardingFlow";
 import { BottomNav } from "./layout/BottomNav";
 import { WebSidebar } from "./layout/WebSidebar";
-import { WebTopBar } from "./layout/WebTopBar";
+import { WebTopBar, WebPageHeader } from "./layout/WebTopBar";
 import { MobileTopBar, MobileTabBar } from "./layout/MobileTopBar";
 import { WebDashboard, MobileDashboard } from "./dashboard/PreviewDashboard";
 import { GoalTab } from "./tabs/GoalTab";
@@ -14,12 +15,115 @@ import { ProfileTab } from "./tabs/ProfileTab";
 import { IntentGateModal } from "./focus/IntentGateModal";
 import { FocusSprintModal } from "./focus/FocusSprintModal";
 import { DemoModeBanner } from "./ui/DemoModeBanner";
+import { GlobalSearch } from "./ui/GlobalSearch";
+import { NotificationsPanel } from "./ui/NotificationsPanel";
+import {
+  buildNotifications,
+  loadReadNotificationIds,
+  saveReadNotificationIds,
+  unreadCount,
+  type AppNotification,
+} from "@/lib/notifications";
+
+const TAB_TITLES: Record<string, string> = {
+  goal: "Goals",
+  insights: "Insights",
+  you: "Settings",
+};
 
 export type GoalOSVariant = "web" | "mobile";
 
 export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
   const goalos = useGoalOS();
   const isWeb = variant === "web";
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchKey, setSearchKey] = useState(0);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    void Promise.resolve().then(() => setReadNotificationIds(loadReadNotificationIds()));
+  }, []);
+
+  const {
+    setActiveTab,
+    openFocusSprint,
+    setIntentAppId,
+    sendCoachMessage,
+    logAppUsage,
+  } = goalos;
+
+  const searchCallbacks = useMemo(
+    () => ({
+      navigate: setActiveTab,
+      openFocusSprint: () => openFocusSprint(),
+      openIntentGate: setIntentAppId,
+      askCoach: (message: string) => void sendCoachMessage(message),
+      logAppUsage,
+    }),
+    [setActiveTab, openFocusSprint, setIntentAppId, sendCoachMessage, logAppUsage]
+  );
+
+  const openSearch = useCallback(() => {
+    setSearchKey((key) => key + 1);
+    setSearchOpen(true);
+  }, []);
+
+  const notifications = useMemo(() => {
+    if (!goalos.state?.onboarded || !goalos.coach || !goalos.score) return [];
+    return buildNotifications(goalos.state, goalos.coach, goalos.score);
+  }, [goalos.state, goalos.coach, goalos.score]);
+
+  const notificationUnread = unreadCount(notifications, readNotificationIds);
+
+  const markNotificationRead = useCallback((id: string) => {
+    setReadNotificationIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      saveReadNotificationIds(next);
+      return next;
+    });
+  }, []);
+
+  const markAllNotificationsRead = useCallback(() => {
+    const next = new Set(notifications.map((n) => n.id));
+    setReadNotificationIds(next);
+    saveReadNotificationIds(next);
+  }, [notifications]);
+
+  const handleNotificationOpen = useCallback(
+    (notification: AppNotification) => {
+      markNotificationRead(notification.id);
+      setNotificationsOpen(false);
+      switch (notification.action.type) {
+        case "navigate":
+          goalos.setActiveTab(notification.action.tab);
+          break;
+        case "sprint":
+          goalos.openFocusSprint();
+          break;
+        case "intent":
+          goalos.setIntentAppId(notification.action.appId);
+          break;
+        case "coach":
+          goalos.setActiveTab("coach");
+          break;
+      }
+    },
+    [markNotificationRead, goalos]
+  );
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchKey((key) => key + 1);
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (!goalos.state) {
     return (
@@ -43,6 +147,24 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
 
   const modals = (
     <>
+      {goalos.coach && (
+        <GlobalSearch
+          key={searchKey}
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          state={goalos.state}
+          coach={goalos.coach}
+          callbacks={searchCallbacks}
+        />
+      )}
+      <NotificationsPanel
+        open={notificationsOpen}
+        notifications={notifications}
+        readIds={readNotificationIds}
+        onClose={() => setNotificationsOpen(false)}
+        onOpen={handleNotificationOpen}
+        onMarkAllRead={markAllNotificationsRead}
+      />
       {intentApp && (
         <IntentGateModal
           app={intentApp}
@@ -81,6 +203,8 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
             coach={goalos.coach!}
             onStartSprint={() => goalos.openFocusSprint()}
             onViewAllApps={() => goalos.setActiveTab("goal")}
+            onIntentGate={(appId) => goalos.setIntentAppId(appId)}
+            onLogUsage={goalos.logAppUsage}
           />
         ))}
       {goalos.activeTab === "goal" && (
@@ -94,6 +218,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
       {goalos.activeTab === "coach" && (
         <CoachTab
           state={goalos.state}
+          score={goalos.score!.total}
           coach={goalos.coach!}
           messages={goalos.coachMessages}
           thinking={goalos.coachThinking}
@@ -126,22 +251,43 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
   );
 
   if (isWeb) {
+    const openCoach = () => goalos.setActiveTab("coach");
+    const openNotifications = () => setNotificationsOpen(true);
+
     return (
       <>
         <WebSidebar
           active={goalos.activeTab}
           onChange={goalos.setActiveTab}
           displayName={goalos.state.displayName}
-          streak={goalos.state.focusSprints.length > 0 ? goalos.state.focusSprints.length : 0}
+          focusSprints={goalos.state.focusSprints}
+          focusSprintOpen={goalos.focusSprintOpen}
         />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-6 py-6 lg:px-8">
-          {goalos.activeTab === "today" && (
-            <WebTopBar displayName={goalos.state.displayName} />
-          )}
-          {goalos.activeTab !== "today" && goalos.activeTab !== "coach" && (
-            <h1 className="mb-4 text-xl font-semibold capitalize text-zinc-50">
-              {goalos.activeTab === "you" ? "Settings" : goalos.activeTab}
-            </h1>
+          {goalos.activeTab === "today" ? (
+            <WebTopBar
+              displayName={goalos.state.displayName}
+              onOpenSearch={openSearch}
+              onOpenCoach={openCoach}
+              onOpenNotifications={openNotifications}
+              unreadNotifications={notificationUnread}
+            />
+          ) : goalos.activeTab === "coach" ? (
+            <WebPageHeader
+              title="AI Coach"
+              onOpenSearch={openSearch}
+              onOpenCoach={openCoach}
+              onOpenNotifications={openNotifications}
+              unreadNotifications={notificationUnread}
+            />
+          ) : (
+            <WebPageHeader
+              title={TAB_TITLES[goalos.activeTab] ?? goalos.activeTab}
+              onOpenSearch={openSearch}
+              onOpenCoach={openCoach}
+              onOpenNotifications={openNotifications}
+              unreadNotifications={notificationUnread}
+            />
           )}
           <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {tabContent}
@@ -158,6 +304,9 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
         displayName={goalos.state.displayName}
         demoMode={goalos.state.demoMode}
         onProfile={() => goalos.setActiveTab("you")}
+        onOpenSearch={openSearch}
+        onOpenNotifications={() => setNotificationsOpen(true)}
+        unreadNotifications={notificationUnread}
       />
       <MobileTabBar active={goalos.activeTab} onChange={goalos.setActiveTab} />
 

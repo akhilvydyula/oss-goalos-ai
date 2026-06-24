@@ -27,12 +27,20 @@ export function GoalTab({
 }) {
   return (
     <div className="space-y-5">
-      {!state.demoMode && (
+      {!state.demoMode ? (
         <div className="goalos-card border-[#2be7a8]/20 bg-[#2be7a8]/5 p-4">
           <p className="text-sm font-medium text-[#2be7a8]">Log your screen time</p>
           <p className="mt-1 text-xs leading-relaxed text-zinc-500">
             The web demo cannot read your phone. Tap +15 / +30 / +45 under each app to log time —
             your Goal Alignment Score updates immediately.
+          </p>
+        </div>
+      ) : (
+        <div className="goalos-card border-amber-500/20 bg-amber-500/5 p-4">
+          <p className="text-sm font-medium text-amber-300">Sample data mode</p>
+          <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+            Pre-filled usage is for preview. You can still log time and run sprints — changes update
+            your score live.
           </p>
         </div>
       )}
@@ -135,20 +143,18 @@ export function GoalTab({
                   </button>
                 )}
               </div>
-              {!state.demoMode && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {LOG_INCREMENTS.map((mins) => (
-                    <button
-                      key={mins}
-                      type="button"
-                      onClick={() => onLogUsage(app.id, mins)}
-                      className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-[#2be7a8]/30 hover:text-[#2be7a8]"
-                    >
-                      <Plus className="h-3 w-3" />{mins}m
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {LOG_INCREMENTS.map((mins) => (
+                  <button
+                    key={mins}
+                    type="button"
+                    onClick={() => onLogUsage(app.id, mins)}
+                    className="flex items-center gap-1 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-[#2be7a8]/30 hover:text-[#2be7a8]"
+                  >
+                    <Plus className="h-3 w-3" />{mins}m
+                  </button>
+                ))}
+              </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {CLASS_OPTIONS.map((opt) => (
                   <button
