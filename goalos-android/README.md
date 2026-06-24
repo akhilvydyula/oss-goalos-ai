@@ -1,38 +1,63 @@
 # GoalOS AI — Native Android App
 
-Kotlin + Jetpack Compose mobile app per your Notion CTO architecture spec.
+<p align="center">
+  <strong>Turn screen time into goal time — on your phone.</strong>
+</p>
+
+<p align="center">
+  <a href="../CONTRIBUTING.md">Contributing</a> ·
+  <a href="../docs/GETTING_STARTED.md">Getting Started</a> ·
+  <a href="../docs/ARCHITECTURE.md">Architecture</a>
+</p>
+
+Kotlin + Jetpack Compose native app with **real** `UsageStatsManager` tracking.
 
 ## Features
 
 - Goal setup + Productivity DNA onboarding
 - **Real app usage tracking** via `UsageStatsManager`
 - Goal Alignment Score (v1 formula)
-- AI Coach recommendations
+- Interactive AI Coach chat
 - Intent Gate before distracting apps
 - Focus Sprint timer
-- Weekly identity + profile
+- Premium profile with avatar & identity
 - DataStore persistence (local-first)
 
 ## Requirements
 
 - [Android Studio](https://developer.android.com/studio) Ladybug (2024.2+) or newer
 - Android SDK 35
-- Physical Android device or emulator (API 26+)
+- JDK 17
+- Physical device or emulator (API 26+)
 
-## Run on your phone
+## Quick start
 
-1. Open **Android Studio** → **Open** → select the `goalos-android` folder
-2. Wait for Gradle sync to finish
-3. Connect your Android phone with **USB debugging** enabled, or start an emulator
-4. Click **Run** (green play button)
+### Android Studio
 
-## Grant Usage Access (required for real tracking)
+1. **File → Open** → `goalos-android/`
+2. Gradle sync
+3. Run on device/emulator ▶
 
-After onboarding:
+### Command line
 
-1. Tap **Open Usage Settings** on the Today screen
-2. Find **GoalOS AI** in the list and enable **Permit usage access**
-3. Return to the app — real app usage will appear
+```bash
+cd goalos-android
+./gradlew assembleDebug
+```
+
+**Windows:** `.\gradlew.bat assembleDebug`
+
+APK: `app/build/outputs/apk/debug/app-debug.apk`
+
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+## Usage Access permission
+
+1. Complete onboarding
+2. **Today** tab → **Open Usage Settings**
+3. Enable **Permit usage access** for GoalOS AI
 
 ## Project structure
 
@@ -41,22 +66,9 @@ goalos-android/
 ├── app/src/main/java/com/goalos/ai/
 │   ├── domain/          # Scoring, coach, models
 │   ├── data/            # DataStore, UsageStatsManager
-│   ├── ui/              # Compose screens
+│   ├── ui/              # Compose screens + theme
 │   └── GoalOSViewModel.kt
 ```
-
-## Build APK from command line
-
-After opening once in Android Studio (generates Gradle wrapper):
-
-```bash
-cd goalos-android
-./gradlew assembleDebug
-```
-
-APK output: `app/build/outputs/apk/debug/app-debug.apk`
-
-Transfer to your phone and install, or use `adb install app-debug.apk`.
 
 ## Stack
 
@@ -66,9 +78,18 @@ Transfer to your phone and install, or use `adb install app-debug.apk`.
 | UI | Jetpack Compose + Material 3 |
 | Storage | DataStore |
 | Usage | UsageStatsManager |
-| Min SDK | 26 (Android 8.0) |
+| Min SDK | 26 |
+
+## CI
+
+Every PR builds via [CI workflow](../.github/workflows/ci.yml). Debug APK uploaded as artifact.
 
 ## Related
 
-- Web prototype: `../goalos-web/`
-- Product docs: [Notion Hub](https://app.notion.com/p/387f3d17ece781ff90b1cfbd7439675f)
+- [Web app](../goalos-web/)
+- [Monorepo README](../README.md)
+- [Contributing](../CONTRIBUTING.md)
+
+## License
+
+[MIT](../LICENSE)

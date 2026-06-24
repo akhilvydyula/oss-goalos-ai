@@ -1,47 +1,26 @@
-# Contributing to GoalOS AI
+# Contributing to goalos-web
 
-Thank you for your interest in contributing! GoalOS AI is an open-source productivity OS — we welcome bug fixes, UI improvements, and feature PRs.
+This package is part of the [GoalOS AI monorepo](../).
 
-## Getting started
+**Please read the main guide first:** [../CONTRIBUTING.md](../CONTRIBUTING.md)
+
+## Web-specific commands
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/goalos-ai.git
-cd goalos-ai/goalos-web
+cd goalos-web
 npm install
-npm run dev
+npm run dev      # http://localhost:3000
+npm run lint
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+## Web-specific notes
 
-## Development
+- Design tokens live in `src/app/globals.css` (`#2BE7A8`, `#68A7FF`)
+- WebLLM coach: `src/lib/web-llm-coach.ts` (client-only, WebGPU)
+- Keep scoring in sync with Android: `src/lib/scoring.ts` ↔ `goalos-android/.../Engines.kt`
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run lint` | ESLint |
+## Docs
 
-## Project structure
-
-```
-goalos-web/src/
-├── app/           # Next.js app router
-├── components/    # UI components
-├── hooks/         # React hooks (useGoalOS)
-└── lib/           # Scoring, coach engine, types, storage
-```
-
-## Pull request guidelines
-
-1. Keep PRs focused — one feature or fix per PR
-2. Match existing code style and design tokens (`globals.css`)
-3. Run `npm run build` and `npm run lint` before submitting
-4. Update README if you add user-facing features
-
-## Android companion
-
-The native Android app lives in `../goalos-android`. Cross-platform changes to scoring/coach logic should stay in sync when possible.
-
-## Questions
-
-Open a GitHub issue for bugs, feature requests, or architecture discussions.
+- [Architecture](../docs/ARCHITECTURE.md)
+- [Deployment](../docs/DEPLOYMENT.md)

@@ -1,7 +1,14 @@
 {
   "name": "goalos-ai",
+  "version": "0.3.0",
   "private": true,
-  "description": "GoalOS AI monorepo — run scripts from root or goalos-web/",
+  "description": "GoalOS AI — open-source productivity OS. Turn screen time into goal time.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akhilvydyula/goalos-ai.git"
+  },
+  "license": "MIT",
+  "author": "Akhil Vydyula",
   "scripts": {
     "dev": "npm run dev --prefix goalos-web",
     "build": "npm run build --prefix goalos-web",

@@ -44,9 +44,11 @@ export function useWebLLM(autoLoad = false) {
   }, [status]);
 
   useEffect(() => {
-    if (autoLoad && status === "idle") {
+    if (!autoLoad || status !== "idle") return;
+    const id = window.setTimeout(() => {
       void loadModel();
-    }
+    }, 0);
+    return () => window.clearTimeout(id);
   }, [autoLoad, status, loadModel]);
 
   return {

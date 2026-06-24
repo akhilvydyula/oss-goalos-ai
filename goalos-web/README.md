@@ -105,10 +105,10 @@ No environment variables required for the demo.
 | `goalos-web/` | This web app (Next.js) |
 | `goalos-android/` | Native Android app (Kotlin + Compose) |
 
-## License
-
-[MIT](LICENSE) — free for personal and commercial use.
-
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome!
+See the [monorepo contributing guide](../CONTRIBUTING.md). PRs welcome!
+
+## License
+
+[MIT](../LICENSE) — free for personal and commercial use.

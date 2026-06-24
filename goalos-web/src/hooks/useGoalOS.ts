@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { UserState, TabId, AppClassification, IntentReason, CoachMessage } from "@/lib/types";
 import { loadState, saveState } from "@/lib/storage";
 import { calculateGoalAlignmentScore } from "@/lib/scoring";
@@ -14,18 +14,17 @@ import { generateCoachReplyWithWebLLM, fallbackCoachReply } from "@/lib/web-llm-
 import { useWebLLM } from "@/hooks/useWebLLM";
 
 export function useGoalOS() {
-  const [state, setState] = useState<UserState | null>(null);
+  const [state, setState] = useState<UserState | null>(() => {
+    if (typeof window === "undefined") return null;
+    return loadState();
+  });
   const [activeTab, setActiveTab] = useState<TabId>("today");
   const [intentAppId, setIntentAppId] = useState<string | null>(null);
   const [focusSprintOpen, setFocusSprintOpen] = useState(false);
-  const [coachMessages, setCoachMessages] = useState<CoachMessage[]>([]);
+  const [chatMessages, setChatMessages] = useState<CoachMessage[]>([]);
   const [coachThinking, setCoachThinking] = useState(false);
 
   const webLLM = useWebLLM(activeTab === "coach");
-
-  useEffect(() => {
-    setState(loadState());
-  }, []);
 
   const persist = useCallback((next: UserState) => {
     setState(next);
@@ -73,10 +72,15 @@ export function useGoalOS() {
     });
   }, [state]);
 
-  useEffect(() => {
-    if (!state?.onboarded || !score || !coach) return;
-    setCoachMessages(openingMessages(state, score, coach));
-  }, [state?.onboarded, state?.goal?.title, score?.total, coach?.nextAction]);
+  const openingCoachMessages = useMemo(() => {
+    if (!state?.onboarded || !score || !coach) return [];
+    return openingMessages(state, score, coach);
+  }, [state, score, coach]);
+
+  const coachMessages = useMemo(
+    () => [...openingCoachMessages, ...chatMessages],
+    [openingCoachMessages, chatMessages]
+  );
 
   const sendCoachMessage = useCallback(
     async (text: string) => {
@@ -84,7 +88,7 @@ export function useGoalOS() {
 
       const trimmed = text.trim();
       const userMsg = createCoachMessage("user", trimmed);
-      setCoachMessages((prev) => [...prev, userMsg]);
+      setChatMessages((prev) => [...prev, userMsg]);
       setCoachThinking(true);
 
       let replyText: string;
@@ -105,7 +109,7 @@ export function useGoalOS() {
         replyText = fallbackCoachReply(trimmed, state, score, coach);
       }
 
-      setCoachMessages((prev) => [...prev, createCoachMessage("coach", replyText)]);
+      setChatMessages((prev) => [...prev, createCoachMessage("coach", replyText)]);
       setCoachThinking(false);
     },
     [state, score, coach, coachMessages, coachThinking, webLLM.status]
@@ -123,9 +127,8 @@ export function useGoalOS() {
   );
 
   const refreshCoachChat = useCallback(() => {
-    if (!state || !score || !coach) return;
-    setCoachMessages(openingMessages(state, score, coach));
-  }, [state, score, coach]);
+    setChatMessages([]);
+  }, []);
 
   const classifyApp = useCallback(
     (appId: string, classification: AppClassification) => {
