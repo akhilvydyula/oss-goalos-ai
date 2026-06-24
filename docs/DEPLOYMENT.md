@@ -2,6 +2,56 @@
 
 Guide for deploying GoalOS AI web and distributing the Android app.
 
+## Free hosting comparison (multiple sites)
+
+| Platform | Free sites | Bandwidth | Best for |
+|----------|-----------|-----------|----------|
+| **[GitHub Pages](https://pages.github.com)** ✅ used here | Unlimited (1 per repo) | 100 GB/mo soft | OSS demos, auto-deploy from `main` |
+| **[Cloudflare Pages](https://pages.cloudflare.com)** | ~100 projects | **Unlimited** | Many static/Jamstack sites |
+| **[Render](https://render.com)** static | Unlimited static sites | 100 GB/mo | Static or Node apps, `*.onrender.com` |
+| **[Netlify](https://netlify.com)** | Multiple sites | Credit-based (~30 GB) | Jamstack, forms, previews |
+| **Vercel Hobby** | **1 project** | 100 GB/mo | Single personal Next.js app only |
+
+**Why not Vercel?** The free Hobby plan limits you to **one project** — bad if you host many demos.
+
+**GoalOS AI is deployed on GitHub Pages** (free, unlimited repos, no account limits):
+
+**https://akhilvydyula.github.io/goalos-ai/**
+
+Every push to `main` redeploys via [`.github/workflows/pages.yml`](../.github/workflows/pages.yml).
+
+---
+
+## Web — GitHub Pages (default)
+
+Already configured. No secrets or env vars needed.
+
+| Setting | Value |
+|---------|-------|
+| **Build** | `goalos-web` → `npm ci && npm run build` with `GITHUB_PAGES=true` |
+| **Output** | `goalos-web/out` |
+| **URL** | `https://<user>.github.io/goalos-ai/` |
+
+Enable manually (one-time) if needed:
+
+```bash
+gh api -X PUT repos/akhilvydyula/goalos-ai/pages -f build_type=workflow
+```
+
+---
+
+## Web — Cloudflare Pages (recommended for many sites)
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → Create → Connect Git
+2. Repo: `akhilvydyula/goalos-ai`
+3. **Root directory:** `goalos-web`
+4. **Build command:** `npm run build` (omit `GITHUB_PAGES` — root URL at `*.pages.dev`)
+5. **Output directory:** `out`
+
+Unlimited bandwidth, up to ~100 projects on free tier.
+
+---
+
 ## Web — Render
 
 GoalOS AI web is a standard Next.js app. [Render](https://render.com) is a good fit.
