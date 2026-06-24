@@ -1,0 +1,4 @@
+# Cloudflare Pages — deploy with: npx wrangler pages deploy out --project-name=goalos-ai
+name = "goalos-ai"
+pages_build_output_dir = "out"
+compatibility_date = "2024-01-01"

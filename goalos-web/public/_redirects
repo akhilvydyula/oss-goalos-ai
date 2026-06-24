@@ -1,0 +1,7 @@
+# Trailing-slash routes (Next.js static export uses /path/index.html)
+/login /login/ 308
+/register /register/ 308
+/app /app/ 308
+/app/admin /app/admin/ 308
+/web /web/ 308
+/mobile /mobile/ 308
