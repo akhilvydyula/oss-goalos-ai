@@ -1,66 +1,77 @@
 import type { TabId } from "@/lib/types";
-import { Calendar, Target, Sparkles, BarChart3, User } from "lucide-react";
+import { Home, Target, Zap, BarChart3, Plus } from "lucide-react";
 
-const tabs: { id: TabId; label: string; icon: typeof Calendar }[] = [
-  { id: "today", label: "Today", icon: Calendar },
-  { id: "goal", label: "Goal", icon: Target },
-  { id: "coach", label: "Coach", icon: Sparkles },
+const left: { id: TabId; label: string; icon: typeof Home }[] = [
+  { id: "today", label: "Home", icon: Home },
+  { id: "goal", label: "Goals", icon: Target },
+];
+
+const right: { id: TabId; label: string; icon: typeof Home }[] = [
+  { id: "coach", label: "Focus", icon: Zap },
   { id: "insights", label: "Insights", icon: BarChart3 },
-  { id: "you", label: "You", icon: User },
 ];
 
 export function BottomNav({
   active,
   onChange,
+  onFab,
 }: {
   active: TabId;
   onChange: (tab: TabId) => void;
+  onFab: () => void;
 }) {
   return (
-    <nav className="goalos-nav-glass relative z-20 shrink-0">
-      <div className="flex items-end justify-around px-1 pb-1 pt-2">
-        {tabs.map(({ id, label, icon: Icon }) => {
-          const isActive = active === id;
-          const isCoach = id === "coach";
+    <nav className="goalos-nav-glass relative z-20 shrink-0 px-4 pb-2 pt-1">
+      <div className="flex items-end justify-between">
+        <div className="flex flex-1 justify-around">
+          {left.map(({ id, label, icon: Icon }) => (
+            <NavBtn key={id} id={id} label={label} icon={Icon} active={active} onChange={onChange} />
+          ))}
+        </div>
 
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onChange(id)}
-              className={`relative flex flex-col items-center gap-0.5 rounded-2xl px-2.5 py-2 transition-all ${
-                isCoach && !isActive ? "-mt-1" : ""
-              } ${
-                isActive
-                  ? isCoach
-                    ? "text-[#06070d]"
-                    : "text-[#2be7a8]"
-                  : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"
-              }`}
-            >
-              {isCoach ? (
-                <span
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all ${
-                    isActive
-                      ? "bg-gradient-to-br from-[#2be7a8] to-[#68a7ff] shadow-lg shadow-[#2be7a8]/20"
-                      : "bg-white/[0.06] ring-1 ring-white/10"
-                  }`}
-                >
-                  <Icon className={`h-5 w-5 ${isActive ? "stroke-[2.5px]" : ""}`} />
-                </span>
-              ) : (
-                <Icon className={`h-5 w-5 ${isActive ? "stroke-[2.5px]" : ""}`} />
-              )}
-              <span className={`text-[10px] font-medium ${isCoach && isActive ? "text-[#2be7a8]" : ""}`}>
-                {label}
-              </span>
-              {isActive && !isCoach && (
-                <span className="absolute -bottom-0.5 h-0.5 w-5 rounded-full bg-[#2be7a8]" />
-              )}
-            </button>
-          );
-        })}
+        <button
+          type="button"
+          onClick={onFab}
+          className="-mt-7 mx-2 flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#68a7ff] to-[#4d7fff] shadow-lg shadow-[#68a7ff]/35"
+          aria-label="Start focus sprint"
+        >
+          <Plus className="h-7 w-7 text-white" strokeWidth={2.5} />
+        </button>
+
+        <div className="flex flex-1 justify-around">
+          {right.map(({ id, label, icon: Icon }) => (
+            <NavBtn key={id} id={id} label={label} icon={Icon} active={active} onChange={onChange} />
+          ))}
+        </div>
       </div>
     </nav>
+  );
+}
+
+function NavBtn({
+  id,
+  label,
+  icon: Icon,
+  active,
+  onChange,
+}: {
+  id: TabId;
+  label: string;
+  icon: typeof Home;
+  active: TabId;
+  onChange: (tab: TabId) => void;
+}) {
+  const isActive = active === id;
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(id)}
+      className={`flex flex-col items-center gap-0.5 px-2 py-2 transition-colors ${
+        isActive ? "text-[#2be7a8]" : "text-zinc-500"
+      }`}
+    >
+      <Icon className={`h-5 w-5 ${isActive ? "stroke-[2.5px]" : ""}`} />
+      <span className="text-[10px] font-medium">{label}</span>
+    </button>
   );
 }

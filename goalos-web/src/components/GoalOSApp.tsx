@@ -3,10 +3,10 @@
 import { useGoalOS } from "@/hooks/useGoalOS";
 import { OnboardingFlow } from "./onboarding/OnboardingFlow";
 import { BottomNav } from "./layout/BottomNav";
-import { SidebarNav } from "./layout/SidebarNav";
-import { DemoSwitcher } from "./layout/WebShell";
-import { MobileHeader } from "./ui/GoalOSComponents";
-import { TodayDashboard } from "./dashboard/TodayDashboard";
+import { WebSidebar } from "./layout/WebSidebar";
+import { WebTopBar } from "./layout/WebTopBar";
+import { MobileTopBar, MobileTabBar } from "./layout/MobileTopBar";
+import { WebDashboard, MobileDashboard } from "./dashboard/PreviewDashboard";
 import { GoalTab } from "./tabs/GoalTab";
 import { CoachTab } from "./tabs/CoachTab";
 import { InsightsTab } from "./tabs/InsightsTab";
@@ -40,28 +40,47 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
     ? goalos.state.apps.find((a) => a.id === goalos.intentAppId)
     : null;
 
-  const tabTitles: Record<string, { title: string; subtitle?: string }> = {
-    today: { title: "Today", subtitle: goalos.state.goal?.title },
-    goal: { title: "Your Goal", subtitle: "Apps & classification" },
-    coach: { title: "Coach", subtitle: "AI productivity partner" },
-    insights: { title: "Insights", subtitle: "Weekly patterns" },
-    you: { title: "You", subtitle: stateProfile(goalos.state.profile?.identity) },
-  };
-
-  const header = tabTitles[goalos.activeTab] ?? { title: "GoalOS AI" };
+  const modals = (
+    <>
+      {intentApp && (
+        <IntentGateModal
+          app={intentApp}
+          onSelect={(reason, aligned) => goalos.recordIntent(intentApp.id, reason, aligned)}
+          onClose={() => goalos.setIntentAppId(null)}
+        />
+      )}
+      {goalos.focusSprintOpen && (
+        <FocusSprintModal
+          goal={goalos.state.goal}
+          initialTitle={goalos.sprintPrefill?.title}
+          initialDuration={goalos.sprintPrefill?.durationMinutes}
+          onComplete={goalos.completeFocusSprint}
+          onClose={goalos.closeFocusSprint}
+        />
+      )}
+    </>
+  );
 
   const tabContent = (
     <>
-      {goalos.activeTab === "today" && (
-        <TodayDashboard
-          state={goalos.state}
-          score={goalos.score!}
-          coach={goalos.coach!}
-          onStartSprint={() => goalos.openFocusSprint()}
-          onIntentGate={(appId) => goalos.setIntentAppId(appId)}
-          layout={isWeb ? "web" : "mobile"}
-        />
-      )}
+      {goalos.activeTab === "today" &&
+        (isWeb ? (
+          <WebDashboard
+            state={goalos.state}
+            score={goalos.score!}
+            coach={goalos.coach!}
+            onStartSprint={() => goalos.openFocusSprint()}
+            onOpenCoach={() => goalos.setActiveTab("coach")}
+          />
+        ) : (
+          <MobileDashboard
+            state={goalos.state}
+            score={goalos.score!}
+            coach={goalos.coach!}
+            onStartSprint={() => goalos.openFocusSprint()}
+            onViewAllApps={() => goalos.setActiveTab("goal")}
+          />
+        ))}
       {goalos.activeTab === "goal" && (
         <GoalTab
           state={goalos.state}
@@ -106,87 +125,49 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
 
   if (isWeb) {
     return (
-      <div className="flex h-full min-h-0 flex-col gap-3 lg:flex-row lg:gap-5">
-        <SidebarNav active={goalos.activeTab} onChange={goalos.setActiveTab} />
-
-        <div className="goalos-card flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          {goalos.activeTab !== "coach" && (
-            <MobileHeader
-              eyebrow="GoalOS AI"
-              title={header.title}
-              subtitle={header.subtitle}
-            />
+      <>
+        <WebSidebar
+          active={goalos.activeTab}
+          onChange={goalos.setActiveTab}
+          displayName={goalos.state.displayName}
+          streak={goalos.state.focusSprints.length > 0 ? goalos.state.focusSprints.length : 0}
+        />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden px-6 py-6 lg:px-8">
+          {goalos.activeTab === "today" && (
+            <WebTopBar displayName={goalos.state.displayName} />
           )}
-
-          <main className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-8 sm:py-6">
+          {goalos.activeTab !== "today" && goalos.activeTab !== "coach" && (
+            <h1 className="mb-4 text-xl font-semibold capitalize text-zinc-50">
+              {goalos.activeTab === "you" ? "Settings" : goalos.activeTab}
+            </h1>
+          )}
+          <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
             {tabContent}
           </main>
         </div>
-
-        {intentApp && (
-          <IntentGateModal
-            app={intentApp}
-            onSelect={(reason, aligned) => goalos.recordIntent(intentApp.id, reason, aligned)}
-            onClose={() => goalos.setIntentAppId(null)}
-          />
-        )}
-
-        {goalos.focusSprintOpen && (
-          <FocusSprintModal
-            goal={goalos.state.goal}
-            initialTitle={goalos.sprintPrefill?.title}
-            initialDuration={goalos.sprintPrefill?.durationMinutes}
-            onComplete={goalos.completeFocusSprint}
-            onClose={goalos.closeFocusSprint}
-          />
-        )}
-      </div>
+        {modals}
+      </>
     );
   }
 
   return (
-    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="goalos-ambient" aria-hidden />
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[#06070d]">
+      <MobileTopBar
+        displayName={goalos.state.displayName}
+        onProfile={() => goalos.setActiveTab("you")}
+      />
+      <MobileTabBar active={goalos.activeTab} onChange={goalos.setActiveTab} />
 
-      <div className="relative z-10 flex shrink-0 justify-end px-3 pt-2 lg:hidden">
-        <DemoSwitcher active="mobile" />
-      </div>
-
-      {goalos.activeTab !== "coach" && (
-        <MobileHeader
-          eyebrow="GoalOS AI"
-          title={header.title}
-          subtitle={header.subtitle}
-        />
-      )}
-
-      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4">
         {tabContent}
       </main>
 
-      <BottomNav active={goalos.activeTab} onChange={goalos.setActiveTab} />
-
-      {intentApp && (
-        <IntentGateModal
-          app={intentApp}
-          onSelect={(reason, aligned) => goalos.recordIntent(intentApp.id, reason, aligned)}
-          onClose={() => goalos.setIntentAppId(null)}
-        />
-      )}
-
-      {goalos.focusSprintOpen && (
-        <FocusSprintModal
-          goal={goalos.state.goal}
-          initialTitle={goalos.sprintPrefill?.title}
-          initialDuration={goalos.sprintPrefill?.durationMinutes}
-          onComplete={goalos.completeFocusSprint}
-          onClose={goalos.closeFocusSprint}
-        />
-      )}
+      <BottomNav
+        active={goalos.activeTab}
+        onChange={goalos.setActiveTab}
+        onFab={() => goalos.openFocusSprint()}
+      />
+      {modals}
     </div>
   );
-}
-
-function stateProfile(identity?: string) {
-  return identity ? `Identity: ${identity}` : undefined;
 }

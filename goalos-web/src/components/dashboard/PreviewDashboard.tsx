@@ -1,0 +1,451 @@
+import type { UserState, ScoreBreakdown, CoachRecommendation } from "@/lib/types";
+import { AppIcon } from "@/components/ui/AppIcon";
+import { AlignmentGauge, Sparkline, BarChart, DayLabels } from "@/components/ui/MiniCharts";
+import { formatMinutes, totalScreenMinutes, chartSeries, formatDelta, percentChange } from "@/lib/demo-data";
+import { ScoreLabel } from "@/components/ui/AppIcon";
+import {
+  Sparkles,
+  CheckCircle2,
+  Clock,
+  Flame,
+  TrendingUp,
+  MoreHorizontal,
+} from "lucide-react";
+
+const APP_CATEGORY: Record<string, string> = {
+  Udemy: "Learning",
+  ChatGPT: "Productivity",
+  YouTube: "Entertainment",
+  Instagram: "Social",
+  LinkedIn: "Professional",
+  LeetCode: "Learning",
+  Notion: "Productivity",
+  Chrome: "Browser",
+  WhatsApp: "Messaging",
+  TikTok: "Social",
+};
+
+const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+export function MobileDashboard({
+  state,
+  score,
+  coach,
+  onStartSprint,
+  onViewAllApps,
+}: {
+  state: UserState;
+  score: ScoreBreakdown;
+  coach: CoachRecommendation;
+  onStartSprint: () => void;
+  onViewAllApps?: () => void;
+}) {
+  const total = totalScreenMinutes(state.apps);
+  const weekBars = chartSeries(state.weeklyHistory);
+  const topApps = [...state.apps].sort((a, b) => b.minutesToday - a.minutesToday).slice(0, 5);
+  const usedApps = topApps.filter((a) => a.minutesToday > 0);
+  const maxApp = usedApps[0]?.minutesToday ?? 1;
+  const scoreDelta = percentChange(
+    state.weeklyHistory[state.weeklyHistory.length - 1] ?? 0,
+    state.weeklyHistory[state.weeklyHistory.length - 2] ?? 0
+  );
+  const screenDeltaLabel =
+    total === 0 ? "Starting today" : formatDelta(scoreDelta, "vs last check-in");
+  const isFresh = total === 0 && state.focusSprints.length === 0;
+
+  return (
+    <div className="space-y-4 pb-2">
+      {/* Alignment Score */}
+      <div className="goalos-card goalos-card-glow p-5">
+        <div className="flex items-center gap-4">
+          <AlignmentGauge score={score.total} size="lg" />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#2be7a8] shadow-[0_0_8px_#2be7a8]" />
+              <ScoreLabel score={score.total} />
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+              {isFresh
+                ? "Day one — complete a focus sprint or log app time to build your score."
+                : score.total >= 75
+                  ? "You're staying aligned with your priorities. Keep it up."
+                  : coach.diagnosis}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Screen Time */}
+      <div className="goalos-card p-5">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs text-zinc-500">Screen Time</p>
+            <p className="mt-1 text-3xl font-bold tabular-nums text-zinc-50">
+              {formatMinutes(total)}
+            </p>
+            <p className="text-xs text-zinc-500">Today</p>
+          </div>
+          <span className="rounded-full bg-[#2be7a8]/15 px-2.5 py-1 text-[11px] font-medium text-[#2be7a8]">
+            {screenDeltaLabel}
+          </span>
+        </div>
+        <div className="mt-4">
+          <BarChart data={weekBars} labels={WEEK_DAYS} highlightIndex={todayIndex} />
+          <DayLabels labels={WEEK_DAYS} activeIndex={todayIndex} />
+        </div>
+      </div>
+
+      {/* App Usage */}
+      <div className="goalos-card p-5">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-zinc-100">App Usage</h3>
+          <button
+            type="button"
+            onClick={onViewAllApps}
+            className="text-xs font-medium text-[#68a7ff]"
+          >
+            View all
+          </button>
+        </div>
+        <div className="mt-4 space-y-4">
+          {usedApps.length === 0 ? (
+            <p className="py-6 text-center text-sm text-zinc-500">
+              No usage tracked yet. On Android, GoalOS reads app time automatically. In this web
+              demo, complete a focus sprint to get started.
+            </p>
+          ) : (
+            usedApps.map((app) => {
+            const pct = Math.round((app.minutesToday / total) * 100) || 0;
+            const barPct = Math.round((app.minutesToday / maxApp) * 100);
+            return (
+              <div key={app.id} className="flex items-center gap-3">
+                <AppIcon name={app.name} size="sm" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium text-zinc-200">{app.name}</p>
+                      <p className="text-[11px] text-zinc-500">
+                        {APP_CATEGORY[app.name] ?? "App"}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm tabular-nums text-zinc-300">
+                        {formatMinutes(app.minutesToday)}
+                      </p>
+                      <p className="text-[11px] text-zinc-500">{pct}%</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.06]">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#2be7a8] to-[#68a7ff]"
+                      style={{ width: `${barPct}%` }}
+                    />
+                  </div>
+                </div>
+                <button type="button" className="text-zinc-600" aria-label="Options">
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          })
+          )}
+        </div>
+      </div>
+
+      {/* AI Coach strip */}
+      <div className="goalos-card border-[#68a7ff]/20 bg-gradient-to-r from-[#68a7ff]/10 to-transparent p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#68a7ff]/20">
+            <Sparkles className="h-4 w-4 text-[#68a7ff]" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-[#68a7ff]">
+              Next Best Action
+            </p>
+            <p className="mt-1 text-sm text-zinc-300">{coach.nextAction}</p>
+            <button
+              type="button"
+              onClick={onStartSprint}
+              className="goalos-btn-primary mt-3 px-4 py-2 text-xs"
+            >
+              Start Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function WebDashboard({
+  state,
+  score,
+  coach,
+  onStartSprint,
+  onOpenCoach,
+}: {
+  state: UserState;
+  score: ScoreBreakdown;
+  coach: CoachRecommendation;
+  onStartSprint: () => void;
+  onOpenCoach: () => void;
+}) {
+  const roadmapPct = state.roadmapProgress;
+  const focusMins = state.focusSprints.reduce((s, sp) => s + sp.durationMinutes, 0);
+  const focusH = Math.floor(focusMins / 60);
+  const focusM = focusMins % 60;
+  const focusTime = focusMins === 0 ? "0m" : focusH > 0 ? `${focusH}h ${focusM}m` : `${focusM}m`;
+  const weekTrend = chartSeries(state.weeklyHistory);
+  const trendDelta =
+    state.weeklyHistory.length >= 2
+      ? state.weeklyHistory[state.weeklyHistory.length - 1] -
+        state.weeklyHistory[state.weeklyHistory.length - 2]
+      : null;
+  const roadmapDelta = percentChange(roadmapPct, Math.max(0, roadmapPct - 8));
+  const sprintDelta = state.focusSprints.length;
+  const habitScore = score.total;
+
+  const goals = [
+    {
+      title: state.goal?.title ?? "Your Goal",
+      pct: roadmapPct,
+      color: "from-[#2be7a8] to-[#1bc98a]",
+    },
+    ...(state.roadmap?.slice(0, 2).map((m) => ({
+      title: m.title,
+      pct: m.completed ? 100 : 0,
+      color: "from-[#68a7ff] to-[#4d8fff]",
+    })) ?? []),
+  ].slice(0, 3);
+
+  const weekBars = chartSeries(state.weeklyHistory);
+  const weekFocusTotal = focusMins;
+
+  return (
+    <div className="space-y-5">
+      {/* Hero row */}
+      <div className="grid gap-5 lg:grid-cols-5">
+        <div className="goalos-card goalos-card-glow p-6 lg:col-span-3">
+          <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            Goal Alignment Score
+          </p>
+          <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-center">
+            <AlignmentGauge score={score.total} size="lg" />
+            <div className="flex-1 space-y-4">
+              <div>
+                <ScoreLabel score={score.total} />
+                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{coach.diagnosis}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-[11px] text-zinc-500">Progress this week</p>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-[#2be7a8] to-[#68a7ff]"
+                        style={{ width: `${roadmapPct}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-semibold text-[#2be7a8]">{roadmapPct}%</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[11px] text-zinc-500">Alignment trend</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <Sparkline data={weekTrend.length >= 2 ? weekTrend : [score.total, score.total]} />
+                    <span
+                      className={`text-sm font-semibold ${
+                        trendDelta === null
+                          ? "text-zinc-500"
+                          : trendDelta >= 0
+                            ? "text-[#2be7a8]"
+                            : "text-rose-400"
+                      }`}
+                    >
+                      {trendDelta === null ? "—" : `${trendDelta >= 0 ? "+" : ""}${trendDelta}%`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="goalos-card p-6 lg:col-span-2">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-[#68a7ff]" />
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#68a7ff]">
+              AI Coach
+            </p>
+          </div>
+          <p className="mt-1 text-[10px] font-medium uppercase text-zinc-500">Next Best Action</p>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-center gap-2">
+              <span className="rounded-md bg-[#2be7a8]/20 px-2 py-0.5 text-[10px] font-semibold uppercase text-[#2be7a8]">
+                High Impact
+              </span>
+            </div>
+            <p className="mt-2 font-medium text-zinc-100">{coach.nextAction.split(".")[0]}.</p>
+            <p className="mt-1 text-xs text-zinc-500">{state.goal?.title ?? "Your goal"}</p>
+            <p className="mt-1 flex items-center gap-1 text-xs text-zinc-500">
+              <Clock className="h-3 w-3" /> 25–90 min
+            </p>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <button type="button" onClick={onStartSprint} className="goalos-btn-primary flex-1 py-2.5 text-sm">
+              Start Now
+            </button>
+            <button
+              type="button"
+              onClick={onOpenCoach}
+              className="goalos-btn-secondary flex-1 py-2.5 text-sm"
+            >
+              Ask Coach
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Metrics row */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <MetricTile
+          label="Goals Progress"
+          value={`${roadmapPct}%`}
+          delta={formatDelta(roadmapDelta, "from last week")}
+          positive={roadmapDelta === null || roadmapDelta >= 0}
+          data={weekTrend}
+          icon={<TrendingUp className="h-4 w-4" />}
+        />
+        <MetricTile
+          label="Focus Sprints"
+          value={String(sprintDelta)}
+          delta={sprintDelta === 0 ? "None yet today" : `${sprintDelta} completed`}
+          positive={sprintDelta > 0}
+          data={weekTrend}
+          icon={<CheckCircle2 className="h-4 w-4" />}
+          color="#68a7ff"
+        />
+        <MetricTile
+          label="Focus Time"
+          value={focusTime}
+          delta={focusMins === 0 ? "Start a sprint" : "Logged today"}
+          positive={focusMins > 0}
+          data={weekBars}
+          icon={<Clock className="h-4 w-4" />}
+          color="#68a7ff"
+        />
+        <MetricTile
+          label="Alignment Score"
+          value={`${habitScore}`}
+          delta={formatDelta(trendDelta, "vs last check-in")}
+          positive={trendDelta === null || trendDelta >= 0}
+          data={weekTrend}
+          icon={<Flame className="h-4 w-4" />}
+        />
+      </div>
+
+      {/* Bottom row */}
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="goalos-card p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-zinc-100">Goals Overview</h3>
+            <div className="flex gap-1 text-[11px]">
+              {["Active", "Quarterly", "Yearly"].map((t, i) => (
+                <span
+                  key={t}
+                  className={`rounded-lg px-2.5 py-1 ${i === 0 ? "bg-white/10 text-zinc-200" : "text-zinc-500"}`}
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mt-5 space-y-4">
+            {goals.map((g) => (
+              <div key={g.title}>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-300">{g.title}</span>
+                  <span className="font-medium text-zinc-200">{g.pct}%</span>
+                </div>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${g.color}`}
+                    style={{ width: `${g.pct}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="goalos-card p-6">
+          <h3 className="font-semibold text-zinc-100">Weekly Focus</h3>
+          <div className="mt-3 flex justify-between text-[11px] text-zinc-500">
+            {WEEK_DAYS.map((d, i) => (
+              <span
+                key={d}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                  i === todayIndex ? "bg-[#2be7a8]/15 font-semibold text-[#2be7a8]" : ""
+                }`}
+              >
+                {d[0]}
+              </span>
+            ))}
+          </div>
+          <p className="mt-4 text-xs text-zinc-500">Focus Time</p>
+          <p className="text-2xl font-bold text-zinc-50">
+            {focusMins === 0 ? "0m" : `${Math.floor(weekFocusTotal / 60)}h ${weekFocusTotal % 60}m`}
+          </p>
+          <div className="mt-3">
+            <BarChart
+              data={weekBars.map((v) => Math.max(v / 10, 0.5))}
+              labels={WEEK_DAYS}
+              highlightIndex={todayIndex}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MetricTile({
+  label,
+  value,
+  delta,
+  positive,
+  data,
+  icon,
+  color = "#2be7a8",
+}: {
+  label: string;
+  value: string;
+  delta: string;
+  positive?: boolean;
+  data: number[];
+  icon: React.ReactNode;
+  color?: string;
+}) {
+  return (
+    <div className="goalos-card p-4">
+      <div className="flex items-center justify-between text-zinc-500">{icon}</div>
+      <p className="mt-2 text-[11px] text-zinc-500">{label}</p>
+      <p className="mt-0.5 text-2xl font-bold tabular-nums text-zinc-50">{value}</p>
+      <p className={`mt-0.5 text-[11px] ${positive ? "text-[#2be7a8]" : "text-zinc-500"}`}>
+        {delta}
+      </p>
+      <div className="mt-3">
+        <Sparkline data={data} color={color} width={120} />
+      </div>
+    </div>
+  );
+}
+
+// Export greeting helper for top bar
+export function dashboardGreeting(name: string) {
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  return `${greeting}, ${name} 👋`;
+}

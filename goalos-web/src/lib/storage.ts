@@ -1,29 +1,39 @@
 import type { UserState } from "./types";
-import { generateDemoApps } from "./demo-data";
+import { createFreshApps } from "./demo-data";
 
 const STORAGE_KEY = "goalos-user-state";
 
-export const defaultState = (): UserState => ({
-  onboarded: false,
-  privacyAccepted: false,
-  apps: generateDemoApps(),
-  intentCheckIns: [],
-  focusSprints: [],
-  roadmapProgress: 35,
-  energyToday: 3,
-  moodToday: 3,
-  weeklyHistory: [68, 72, 75, 71, 78, 74, 72],
-  createdAt: new Date().toISOString(),
-});
+/** Brand-new user — no fake usage, no scores, onboarding required. */
+export function createScratchState(): UserState {
+  return {
+    onboarded: false,
+    privacyAccepted: false,
+    apps: createFreshApps(),
+    intentCheckIns: [],
+    focusSprints: [],
+    roadmapProgress: 0,
+    energyToday: 3,
+    moodToday: 3,
+    weeklyHistory: [],
+    createdAt: new Date().toISOString(),
+  };
+}
+
+export const defaultState = createScratchState;
 
 export function loadState(): UserState {
-  if (typeof window === "undefined") return defaultState();
+  if (typeof window === "undefined") return createScratchState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState();
-    return { ...defaultState(), ...JSON.parse(raw) };
+    if (!raw) return createScratchState();
+    const parsed = JSON.parse(raw) as Partial<UserState>;
+    return {
+      ...createScratchState(),
+      ...parsed,
+      apps: parsed.apps?.length ? parsed.apps : createFreshApps(),
+    };
   } catch {
-    return defaultState();
+    return createScratchState();
   }
 }
 

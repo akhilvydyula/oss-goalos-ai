@@ -160,5 +160,6 @@ export interface UserState {
   moodToday: number;
   weeklyHistory: number[];
   coachMemory?: CoachMemory;
+  demoMode?: boolean;
   createdAt: string;
 }

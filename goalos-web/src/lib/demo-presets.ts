@@ -56,5 +56,6 @@ export function createInstantDemoState(): UserState {
     moodToday: 4,
     weeklyHistory: [68, 72, 75, 71, 78, 74, 76],
     createdAt: new Date().toISOString(),
+    demoMode: true,
   };
 }

@@ -224,10 +224,22 @@ export function useGoalOS() {
         completedAt: new Date().toISOString(),
         scoreBoost: durationMinutes >= 45 ? 8 : durationMinutes >= 25 ? 5 : 3,
       };
-      persist({
+      const nextState = {
         ...state,
         focusSprints: [...state.focusSprints, sprint],
         roadmapProgress: Math.min(100, state.roadmapProgress + 5),
+      };
+      const newScore = calculateGoalAlignmentScore({
+        apps: nextState.apps,
+        roadmapProgress: nextState.roadmapProgress,
+        intentCheckIns: nextState.intentCheckIns,
+        focusSprints: nextState.focusSprints,
+        energyToday: nextState.energyToday,
+        moodToday: nextState.moodToday,
+      });
+      persist({
+        ...nextState,
+        weeklyHistory: [...state.weeklyHistory, newScore.total],
       });
       closeFocusSprint();
       void sendCoachMessage(`I completed a ${durationMinutes}-minute focus sprint`);

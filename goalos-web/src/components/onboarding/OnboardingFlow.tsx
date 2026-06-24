@@ -3,9 +3,11 @@
 import { useState } from "react";
 import type { UserState } from "@/lib/types";
 import { TAGLINE, PRIVACY_PROMISE } from "@/lib/constants";
-import { deriveProductivityProfile } from "@/lib/scoring";
+import { deriveProductivityProfile, calculateGoalAlignmentScore } from "@/lib/scoring";
 import { createInstantDemoState } from "@/lib/demo-presets";
+import { createScratchState } from "@/lib/storage";
 import { generateRoadmap } from "@/lib/agent";
+import { createFreshApps } from "@/lib/demo-data";
 import { GoalSetupStep } from "./GoalSetupStep";
 import { DnaQuizStep } from "./DnaQuizStep";
 import { Shield, Sparkles, Zap } from "lucide-react";
@@ -20,6 +22,7 @@ export function OnboardingFlow({
   persist: (s: UserState) => void;
 }) {
   const [step, setStep] = useState<Step>("welcome");
+  const [displayName, setDisplayName] = useState("");
 
   if (step === "welcome") {
     return (
@@ -43,15 +46,17 @@ export function OnboardingFlow({
             Your phone is not the problem. Unconscious time is the problem.
           </p>
 
-          <div className="mt-8 grid grid-cols-3 gap-3">
+          <div className="mt-8 space-y-3">
             {[
-              { label: "Goal score", value: "76" },
-              { label: "Focus sprints", value: "25m" },
-              { label: "AI coach", value: "Live" },
-            ].map((stat) => (
-              <div key={stat.label} className="goalos-card p-3 text-center">
-                <p className="text-lg font-bold text-[#2be7a8]">{stat.value}</p>
-                <p className="mt-0.5 text-[10px] uppercase tracking-wide text-zinc-500">{stat.label}</p>
+              "Set your goal & Productivity DNA",
+              "Track alignment from day one",
+              "AI coach that learns with you",
+            ].map((line) => (
+              <div key={line} className="flex items-center gap-3 text-sm text-zinc-400">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#2be7a8]/15 text-xs text-[#2be7a8]">
+                  ✓
+                </span>
+                {line}
               </div>
             ))}
           </div>
@@ -60,7 +65,10 @@ export function OnboardingFlow({
         <div className="relative z-10 mt-8 space-y-3">
           <button
             type="button"
-            onClick={() => setStep("goal")}
+            onClick={() => {
+              persist(createScratchState());
+              setStep("goal");
+            }}
             className="goalos-btn-primary w-full py-4 text-center"
           >
             Get Started
@@ -125,13 +133,38 @@ export function OnboardingFlow({
           <li>✓ Local-first storage with export/delete controls</li>
           <li>✓ You control what the AI remembers</li>
         </ul>
+        <label className="mt-6 block text-sm font-medium text-zinc-300">
+          What should we call you?
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Your first name"
+            className="mt-2 w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-[#2be7a8]/40"
+          />
+        </label>
       </div>
       <button
         type="button"
         onClick={() => {
+          const apps = createFreshApps();
           const roadmap = state.goal ? generateRoadmap(state.goal, state.dna) : undefined;
+          const initialScore = calculateGoalAlignmentScore({
+            apps,
+            roadmapProgress: 0,
+            intentCheckIns: [],
+            focusSprints: [],
+            energyToday: state.energyToday,
+            moodToday: state.moodToday,
+          });
           persist({
             ...state,
+            apps,
+            focusSprints: [],
+            intentCheckIns: [],
+            roadmapProgress: 0,
+            weeklyHistory: [initialScore.total],
+            displayName: displayName.trim() || undefined,
             privacyAccepted: true,
             onboarded: true,
             ...(roadmap ? { roadmap } : {}),
@@ -142,7 +175,7 @@ export function OnboardingFlow({
         Accept & Continue
       </button>
       <p className="mt-3 text-center text-xs text-zinc-600">
-        Demo mode uses simulated usage data. Android app uses UsageStatsManager.
+        Your dashboard starts at zero — usage fills in as you track and act.
       </p>
     </div>
   );

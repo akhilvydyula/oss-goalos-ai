@@ -14,6 +14,20 @@ const DEMO_MINUTES: Record<string, number> = {
   TikTok: 31,
 };
 
+/** Zeroed apps for real users starting from scratch. */
+export function createFreshApps(): TrackedApp[] {
+  return DEFAULT_APPS.map((app, i) => ({
+    id: `app-${i}`,
+    name: app.name,
+    packageName: app.packageName,
+    classification: app.classification,
+    minutesToday: 0,
+    sessions: 0,
+    lastOpenedHour: 12,
+  }));
+}
+
+/** Rich sample data — only for "Explore demo instantly". */
 export function generateDemoApps(): TrackedApp[] {
   return DEFAULT_APPS.map((app, i) => ({
     id: `app-${i}`,
@@ -43,4 +57,23 @@ export function formatHour(hour: number): string {
 
 export function totalScreenMinutes(apps: TrackedApp[]): number {
   return apps.reduce((s, a) => s + a.minutesToday, 0);
+}
+
+/** Pad weekly scores for charts (min 2 points for sparklines). */
+export function chartSeries(history: number[], minLength = 7): number[] {
+  if (history.length >= minLength) return history.slice(-minLength);
+  const pad = Array(minLength - history.length).fill(0);
+  return [...pad, ...history];
+}
+
+export function percentChange(current: number, previous: number): number | null {
+  if (previous === 0 && current === 0) return null;
+  if (previous === 0) return 100;
+  return Math.round(((current - previous) / previous) * 100);
+}
+
+export function formatDelta(pct: number | null, unit = ""): string {
+  if (pct === null) return "Starting today";
+  const sign = pct >= 0 ? "+" : "";
+  return `${sign}${pct}%${unit ? ` ${unit}` : ""}`;
 }

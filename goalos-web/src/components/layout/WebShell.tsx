@@ -1,29 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { TAGLINE } from "@/lib/constants";
 import { Monitor, Smartphone } from "lucide-react";
 
 export function WebShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="goalos-page-bg goalos-app-viewport">
-      <div className="mx-auto flex h-full w-full max-w-7xl flex-col overflow-hidden px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
-        <header className="mb-4 flex shrink-0 flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2be7a8]/80">
-              GoalOS AI · Web demo
-            </p>
-            <h1 className="mt-1 text-2xl font-bold text-zinc-50 sm:text-3xl">
-              <span className="goalos-gradient-text">{TAGLINE}</span>
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-zinc-500">
-              Full-width desktop experience — sidebar navigation, wider dashboards, and coach panel.
-            </p>
-          </div>
-          <DemoSwitcher active="web" />
-        </header>
-        <div className="goalos-web-frame">{children}</div>
+      <div className="absolute right-4 top-4 z-30 hidden lg:block">
+        <DemoSwitcher active="web" />
       </div>
+      <div className="flex h-full min-h-0">{children}</div>
     </div>
   );
 }
