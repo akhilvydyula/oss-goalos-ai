@@ -6,9 +6,9 @@ import { Monitor, Smartphone } from "lucide-react";
 
 export function WebShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="goalos-page-bg min-h-dvh">
-      <div className="mx-auto flex min-h-dvh w-full max-w-7xl flex-col px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-        <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
+    <div className="goalos-page-bg goalos-app-viewport">
+      <div className="mx-auto flex h-full w-full max-w-7xl flex-col overflow-hidden px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
+        <header className="mb-4 flex shrink-0 flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2be7a8]/80">
               GoalOS AI · Web demo
@@ -22,7 +22,7 @@ export function WebShell({ children }: { children: React.ReactNode }) {
           </div>
           <DemoSwitcher active="web" />
         </header>
-        <div className="goalos-web-frame min-h-0 flex-1">{children}</div>
+        <div className="goalos-web-frame">{children}</div>
       </div>
     </div>
   );

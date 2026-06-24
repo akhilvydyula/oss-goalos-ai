@@ -17,7 +17,7 @@ export function BottomNav({
   onChange: (tab: TabId) => void;
 }) {
   return (
-    <nav className="goalos-nav-glass absolute bottom-0 left-0 right-0 z-20">
+    <nav className="goalos-nav-glass z-20 shrink-0">
       <div className="flex items-center justify-around px-1 py-2">
         {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = active === id;

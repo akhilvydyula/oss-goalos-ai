@@ -47,7 +47,7 @@ export function DnaQuizStep({
   };
 
   return (
-    <div className="min-h-screen px-5 py-8">
+    <div className="h-full min-h-0 overflow-y-auto px-5 py-6">
       <button type="button" onClick={onBack} className="mb-4 flex items-center gap-1 text-zinc-400">
         <ChevronLeft className="h-4 w-4" /> Back
       </button>

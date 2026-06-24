@@ -21,7 +21,7 @@ export function OnboardingFlow({
 
   if (step === "welcome") {
     return (
-      <div className="flex min-h-dvh flex-col justify-between px-6 py-12">
+      <div className="flex h-full min-h-0 flex-col justify-between overflow-y-auto px-6 py-8">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2be7a8]/80">
             GoalOS AI
@@ -79,7 +79,7 @@ export function OnboardingFlow({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col px-6 py-10">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto px-6 py-8">
       <div className="goalos-card flex flex-1 flex-col p-6">
         <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2be7a8]/15">
           <Shield className="h-6 w-6 text-[#2be7a8]" />

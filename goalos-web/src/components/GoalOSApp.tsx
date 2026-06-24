@@ -22,14 +22,18 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
 
   if (!goalos.state) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
+      <div className="flex h-full min-h-0 flex-1 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2be7a8] border-t-transparent" />
       </div>
     );
   }
 
   if (!goalos.state.onboarded) {
-    return <OnboardingFlow state={goalos.state} persist={goalos.persist} />;
+    return (
+      <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+        <OnboardingFlow state={goalos.state} persist={goalos.persist} />
+      </div>
+    );
   }
 
   const intentApp = goalos.intentAppId
@@ -76,7 +80,6 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
           onAction={goalos.handleCoachAction}
           onRefresh={goalos.refreshCoachChat}
           onStartSprint={() => goalos.setFocusSprintOpen(true)}
-          layout={isWeb ? "web" : "mobile"}
         />
       )}
       {goalos.activeTab === "insights" && (
@@ -103,7 +106,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
 
   if (isWeb) {
     return (
-      <div className="flex h-full min-h-[calc(100dvh-10rem)] flex-col gap-4 lg:flex-row lg:gap-6">
+      <div className="flex h-full min-h-0 flex-col gap-3 lg:flex-row lg:gap-5">
         <SidebarNav active={goalos.activeTab} onChange={goalos.setActiveTab} />
 
         <div className="goalos-card flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
@@ -140,8 +143,8 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
   }
 
   return (
-    <div className="relative flex h-full min-h-dvh flex-col pb-[4.5rem]">
-      <div className="flex justify-end px-3 pt-3 lg:hidden">
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="flex shrink-0 justify-end px-3 pt-2 lg:hidden">
         <DemoSwitcher active="mobile" />
       </div>
 
@@ -153,7 +156,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
         />
       )}
 
-      <main className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
         {tabContent}
       </main>
 

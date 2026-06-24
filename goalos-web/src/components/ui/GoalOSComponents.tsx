@@ -26,7 +26,7 @@ export function MobileHeader({
   subtitle?: string;
 }) {
   return (
-    <header className="sticky top-0 z-10 border-b border-white/5 bg-[#06070d]/90 px-5 py-4 backdrop-blur-xl">
+    <header className="sticky top-0 z-10 shrink-0 border-b border-white/5 bg-[#06070d]/90 px-5 py-3 backdrop-blur-xl">
       {eyebrow && (
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#2be7a8]/80">
           {eyebrow}

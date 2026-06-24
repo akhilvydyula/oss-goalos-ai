@@ -27,8 +27,8 @@ const features = [
 
 export function MobileDemoShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="goalos-page-bg min-h-dvh">
-      <div className="mx-auto flex min-h-dvh max-w-7xl flex-col items-center gap-6 px-4 py-4 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-8 lg:py-10">
+    <div className="goalos-page-bg goalos-app-viewport lg:min-h-dvh lg:max-h-none lg:overflow-visible">
+      <div className="mx-auto flex h-full max-w-7xl flex-col items-center gap-4 px-0 py-0 lg:min-h-dvh lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-8 lg:py-10">
         <aside className="hidden max-w-xs shrink-0 lg:block xl:max-w-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#68a7ff]/80">
             Mobile demo
@@ -58,11 +58,11 @@ export function MobileDemoShell({ children }: { children: React.ReactNode }) {
           </div>
         </aside>
 
-        <div className="flex w-full max-w-[430px] shrink-0 flex-col items-center gap-3">
-          <div className="hidden w-full justify-end lg:flex">
+        <div className="flex h-full w-full max-w-[430px] shrink-0 flex-col items-center gap-3 lg:h-auto">
+          <div className="hidden w-full justify-end px-4 pt-4 lg:flex">
             <DemoSwitcher active="mobile" />
           </div>
-          <div className="goalos-phone-frame w-full">{children}</div>
+          <div className="goalos-phone-frame w-full flex-1 lg:flex-none">{children}</div>
         </div>
 
         <aside className="hidden max-w-xs shrink-0 lg:block xl:max-w-sm">
