@@ -120,8 +120,15 @@ class GoalOSViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun completeOnboarding() = update {
-        it.copy(onboarded = true, privacyAccepted = true, apps = it.apps.ifEmpty { com.goalos.ai.domain.DemoData.generateApps() })
+        it.copy(
+            onboarded = true,
+            privacyAccepted = true,
+            createdAt = it.createdAt.ifBlank { Instant.now().toString() },
+            apps = it.apps.ifEmpty { com.goalos.ai.domain.DemoData.generateApps() }
+        )
     }
+
+    fun updateDisplayName(name: String) = update { it.copy(displayName = name) }
 
     fun classifyApp(appId: String, classification: AppClassification) = update {
         it.copy(apps = it.apps.map { app -> if (app.id == appId) app.copy(classification = classification) else app })

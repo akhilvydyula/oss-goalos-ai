@@ -8,9 +8,10 @@ import {
   generateCoachRecommendation,
   generateWeeklyReport,
   openingMessages,
-  replyTo,
   createCoachMessage,
 } from "@/lib/coach";
+import { generateCoachReplyWithWebLLM, fallbackCoachReply } from "@/lib/web-llm-coach";
+import { useWebLLM } from "@/hooks/useWebLLM";
 
 export function useGoalOS() {
   const [state, setState] = useState<UserState | null>(null);
@@ -18,6 +19,9 @@ export function useGoalOS() {
   const [intentAppId, setIntentAppId] = useState<string | null>(null);
   const [focusSprintOpen, setFocusSprintOpen] = useState(false);
   const [coachMessages, setCoachMessages] = useState<CoachMessage[]>([]);
+  const [coachThinking, setCoachThinking] = useState(false);
+
+  const webLLM = useWebLLM(activeTab === "coach");
 
   useEffect(() => {
     setState(loadState());
@@ -75,13 +79,36 @@ export function useGoalOS() {
   }, [state?.onboarded, state?.goal?.title, score?.total, coach?.nextAction]);
 
   const sendCoachMessage = useCallback(
-    (text: string) => {
-      if (!state || !score || !coach || !text.trim()) return;
-      const userMsg = createCoachMessage("user", text.trim());
-      const coachReply = createCoachMessage("coach", replyTo(text, state, score, coach));
-      setCoachMessages((prev) => [...prev, userMsg, coachReply]);
+    async (text: string) => {
+      if (!state || !score || !coach || !text.trim() || coachThinking) return;
+
+      const trimmed = text.trim();
+      const userMsg = createCoachMessage("user", trimmed);
+      setCoachMessages((prev) => [...prev, userMsg]);
+      setCoachThinking(true);
+
+      let replyText: string;
+
+      if (webLLM.status === "ready") {
+        try {
+          replyText = await generateCoachReplyWithWebLLM({
+            state,
+            score,
+            coach,
+            history: [...coachMessages, userMsg],
+            userMessage: trimmed,
+          });
+        } catch {
+          replyText = fallbackCoachReply(trimmed, state, score, coach);
+        }
+      } else {
+        replyText = fallbackCoachReply(trimmed, state, score, coach);
+      }
+
+      setCoachMessages((prev) => [...prev, createCoachMessage("coach", replyText)]);
+      setCoachThinking(false);
     },
-    [state, score, coach]
+    [state, score, coach, coachMessages, coachThinking, webLLM.status]
   );
 
   const handleCoachAction = useCallback(
@@ -90,7 +117,7 @@ export function useGoalOS() {
       if (lower.includes("sprint") || lower.includes("create")) {
         setFocusSprintOpen(true);
       }
-      sendCoachMessage(action);
+      void sendCoachMessage(action);
     },
     [sendCoachMessage]
   );
@@ -143,7 +170,7 @@ export function useGoalOS() {
         roadmapProgress: Math.min(100, state.roadmapProgress + 5),
       });
       setFocusSprintOpen(false);
-      sendCoachMessage(`I completed a ${durationMinutes}-minute focus sprint`);
+      void sendCoachMessage(`I completed a ${durationMinutes}-minute focus sprint`);
     },
     [state, persist, sendCoachMessage]
   );
@@ -158,9 +185,11 @@ export function useGoalOS() {
     coach,
     weeklyReport,
     coachMessages,
+    coachThinking,
     sendCoachMessage,
     handleCoachAction,
     refreshCoachChat,
+    webLLM,
     classifyApp,
     recordIntent,
     intentAppId,

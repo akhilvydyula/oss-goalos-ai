@@ -56,8 +56,15 @@ import com.goalos.ai.ui.components.PrimaryButton
 import com.goalos.ai.ui.components.ScoreCard
 import com.goalos.ai.ui.components.SectionLabel
 import com.goalos.ai.ui.components.SuggestionChips
+import com.goalos.ai.ui.components.DnaInfoRow
+import com.goalos.ai.ui.components.ProfileHeroCard
 import com.goalos.ai.ui.components.WeeklyIdentityCard
+import com.goalos.ai.ui.components.identityEmoji
+import com.goalos.ai.ui.components.profileInitials
 import com.goalos.ai.ui.theme.GoalOSTokens
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TodayScreen(
@@ -90,8 +97,8 @@ fun TodayScreen(
     ) {
         MobileHeader(
             title = "Today",
-            subtitle = "${state.goal?.title ?: "Your Goal"} · Day ${(state.roadmapProgress / 3).coerceAtLeast(1)} of ${state.goal?.timelineWeeks ?: 90}",
-            avatarLabel = "A"
+            subtitle = "${state.goal?.title ?: "Your Goal"} · ${identityEmoji(state.profile?.identity)} ${state.profile?.identity ?: "Getting started"}",
+            avatarLabel = profileInitials(state.displayName, state.profile?.identity)
         )
 
         if (!hasPermission) {
@@ -314,13 +321,64 @@ fun InsightsScreen(modifier: Modifier, state: UserState, score: ScoreBreakdown?,
 }
 
 @Composable
-fun ProfileScreen(modifier: Modifier, state: UserState, weekly: WeeklyReport?, onReset: () -> Unit) {
-    Column(modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        MobileHeader("You", "Privacy & identity", "☻")
-        HeroCard {
-            Text(state.profile?.identity ?: "Your Identity", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-            Text("Tone: ${state.profile?.coachingTone ?: "Supportive"}", color = GoalOSTokens.TextMuted, modifier = Modifier.padding(top = 6.dp))
+fun ProfileScreen(
+    modifier: Modifier,
+    state: UserState,
+    weekly: WeeklyReport?,
+    onNameChange: (String) -> Unit,
+    onReset: () -> Unit
+) {
+    val identity = state.profile?.identity ?: "Consistent Builder"
+    val memberSince = state.createdAt.takeIf { it.isNotBlank() }?.let {
+        runCatching {
+            Instant.parse(it).atZone(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+        }.getOrDefault("Recently")
+    } ?: "Recently"
+
+    Column(
+        modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 12.dp).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        MobileHeader("You", "Profile · privacy · identity", profileInitials(state.displayName, identity))
+
+        ProfileHeroCard(
+            displayName = state.displayName,
+            identity = identity,
+            coachingTone = state.profile?.coachingTone ?: "Supportive",
+            onNameChange = onNameChange
+        )
+
+        state.goal?.let { goal ->
+            HeroCard {
+                SectionLabel("Active goal")
+                Text(goal.title, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(top = 8.dp))
+                Text(
+                    "${goal.dailyCommitmentMinutes} min/day · ${goal.timelineWeeks} weeks · ${goal.focusWindow}",
+                    color = GoalOSTokens.TextMuted,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            MetricCard("Energy", "${state.energyToday}/5", modifier = Modifier.weight(1f))
+            MetricCard("Mood", "${state.moodToday}/5", modifier = Modifier.weight(1f))
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            MetricCard("Roadmap", "${state.roadmapProgress}%", modifier = Modifier.weight(1f))
+            MetricCard("Sprints", "${state.focusSprints.size}", modifier = Modifier.weight(1f))
+        }
+
+        GoalOSCard {
+            SectionLabel("Productivity DNA")
+            DnaInfoRow("Focus window", state.profile?.focusWindow ?: state.dna?.bestFocusTime ?: "Morning", "⚡")
+            DnaInfoRow("Distraction trigger", state.profile?.distractionTrigger ?: state.dna?.distractionTrigger ?: "Boredom", "🌙")
+            DnaInfoRow("Reminder style", state.profile?.reminderStrategy ?: "Gentle nudges", "✨")
+            DnaInfoRow("Member since", memberSince, "📅")
+        }
+
         weekly?.let {
             WeeklyIdentityCard(
                 goalTitle = state.goal?.title ?: "Your Goal",
@@ -330,15 +388,18 @@ fun ProfileScreen(modifier: Modifier, state: UserState, weekly: WeeklyReport?, o
                 reductionPercent = it.distractionReductionPercent
             )
         }
+
         GoalOSCard {
             SectionLabel("Privacy promise")
             Text(
                 "We do not read messages, typed text, photos, or calls. Usage insights stay for your productivity.",
                 color = GoalOSTokens.TextMuted,
                 fontSize = 13.sp,
+                lineHeight = 19.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
+
         PrimaryButton("Delete all data & restart", onReset)
     }
 }

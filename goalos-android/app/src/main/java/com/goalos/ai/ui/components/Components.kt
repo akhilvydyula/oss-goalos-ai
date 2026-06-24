@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -25,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -36,6 +41,170 @@ import androidx.compose.ui.unit.sp
 import com.goalos.ai.domain.CoachRole
 import com.goalos.ai.domain.ScoreBreakdown
 import com.goalos.ai.ui.theme.GoalOSTokens
+
+@Composable
+fun AmbientBackground(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize().drawBehind {
+        drawCircle(
+            color = Color(0x332BE7A8),
+            radius = size.width * 0.55f,
+            center = Offset(size.width * 0.12f, size.height * 0.08f)
+        )
+        drawCircle(
+            color = Color(0x2868A7FF),
+            radius = size.width * 0.45f,
+            center = Offset(size.width * 0.92f, size.height * 0.14f)
+        )
+        drawCircle(
+            color = Color(0x182BE7A8),
+            radius = size.width * 0.5f,
+            center = Offset(size.width * 0.5f, size.height * 0.95f)
+        )
+    })
+}
+
+fun identityEmoji(identity: String?): String = when (identity) {
+    "Night Scroller" -> "🌙"
+    "Deep Worker" -> "🧠"
+    "Focused Creator" -> "✨"
+    "Career Climber" -> "📈"
+    "AI Learner" -> "🤖"
+    "Consistent Builder" -> "🏗️"
+    "High Potential, Low Execution" -> "⚡"
+    else -> "🎯"
+}
+
+fun profileInitials(displayName: String, identity: String?): String {
+    if (displayName.isNotBlank()) {
+        return displayName.trim().split(Regex("\\s+")).take(2)
+            .mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
+            .joinToString("")
+            .ifBlank { "GO" }
+    }
+    return identity?.split(Regex("\\s+"))?.take(2)
+        ?.mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
+        ?.joinToString("")
+        ?.ifBlank { "GO" } ?: "GO"
+}
+
+@Composable
+fun ProfileAvatar(
+    displayName: String,
+    identity: String?,
+    modifier: Modifier = Modifier,
+    size: androidx.compose.ui.unit.Dp = 96.dp
+) {
+    val initials = profileInitials(displayName, identity)
+    Box(
+        modifier = modifier.size(size),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+                .background(GoalOSTokens.CtaGradient)
+                .border(2.dp, Color(0x662BE7A8), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                initials,
+                fontSize = (size.value * 0.28f).sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+        Box(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = 2.dp, y = 2.dp)
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(Color(0xF0061018))
+                .border(1.dp, GoalOSTokens.BorderSoft, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("📷", fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+fun ProfileHeroCard(
+    displayName: String,
+    identity: String,
+    coachingTone: String,
+    onNameChange: (String) -> Unit
+) {
+    GoalOSCard(
+        gradient = Brush.linearGradient(
+            listOf(Color(0x332BE7A8), Color(0x1A68A7FF), Color(0x0AFFFFFF))
+        )
+    ) {
+        Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProfileAvatar(displayName, identity)
+            BasicTextField(
+                value = displayName,
+                onValueChange = onNameChange,
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    color = GoalOSTokens.TextPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                ),
+                cursorBrush = SolidColor(GoalOSTokens.Primary),
+                singleLine = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                decorationBox = { inner ->
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        if (displayName.isBlank()) {
+                            Text(
+                                "Add your name",
+                                color = GoalOSTokens.TextDim,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                        inner()
+                    }
+                }
+            )
+            Row(
+                Modifier.padding(top = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text(identityEmoji(identity), fontSize = 16.sp)
+                Text(identity, color = GoalOSTokens.Primary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            }
+            Text(
+                "$coachingTone coaching tone",
+                color = GoalOSTokens.TextDim,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun DnaInfoRow(label: String, value: String, emoji: String = "•") {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(emoji, fontSize = 14.sp)
+            Text(label, color = GoalOSTokens.TextDim, fontSize = 13.sp)
+        }
+        Text(value, color = GoalOSTokens.TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Medium)
+    }
+}
 
 @Composable
 fun GoalOSCard(
@@ -160,7 +329,17 @@ private fun ScoreRow(label: String, value: Int, max: Int) {
 fun MetricCard(label: String, value: String, delta: String? = null, positive: Boolean = true, modifier: Modifier = Modifier) {
     GoalOSCard(modifier) {
         Text(label.uppercase(), color = GoalOSTokens.TextDim, fontSize = 10.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
-        Text(value, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 6.dp))
+        Text(
+            value,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = when {
+                label.contains("Goal", ignoreCase = true) && positive -> GoalOSTokens.Primary
+                !positive && label.contains("Distract", ignoreCase = true) -> GoalOSTokens.Warning
+                else -> GoalOSTokens.TextPrimary
+            },
+            modifier = Modifier.padding(top = 6.dp)
+        )
         delta?.let {
             Text(
                 it,
@@ -219,19 +398,23 @@ fun PrimaryButton(
     enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = GoalOSTokens.Primary,
-            contentColor = GoalOSTokens.Background,
-            disabledContainerColor = GoalOSTokens.Primary.copy(alpha = 0.35f),
-            disabledContentColor = GoalOSTokens.Background.copy(alpha = 0.6f)
-        )
+    val brush = if (enabled) GoalOSTokens.CtaGradient else Brush.linearGradient(
+        listOf(GoalOSTokens.Primary.copy(alpha = 0.35f), GoalOSTokens.Secondary.copy(alpha = 0.35f))
+    )
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(brush)
+            .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text, modifier = Modifier.padding(vertical = 4.dp), fontWeight = FontWeight.Bold)
+        Text(
+            text,
+            fontWeight = FontWeight.Bold,
+            color = if (enabled) GoalOSTokens.Background else GoalOSTokens.Background.copy(alpha = 0.6f)
+        )
     }
 }
 

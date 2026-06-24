@@ -1,0 +1,11 @@
+{
+  "name": "goalos-ai",
+  "private": true,
+  "description": "GoalOS AI monorepo — run scripts from root or goalos-web/",
+  "scripts": {
+    "dev": "npm run dev --prefix goalos-web",
+    "build": "npm run build --prefix goalos-web",
+    "start": "npm run start --prefix goalos-web",
+    "lint": "npm run lint --prefix goalos-web"
+  }
+}

@@ -86,21 +86,17 @@ See `src/lib/scoring.ts`.
 
 ## AI Coach
 
-The coach uses a **rule-based engine** (`src/lib/coach.ts`) driven by your score, Productivity DNA, and app classifications. It supports:
+The coach uses **WebLLM** — a small language model that runs **entirely in your browser** via WebGPU. No API keys, no server, no Docker.
 
-- Opening context messages
-- Interactive chat with suggested prompts & actions
-- Score-aware replies (tomorrow plan, night scrolling, sprints)
+- First visit to the Coach tab downloads ~600MB (cached afterward)
+- Works best in **Chrome** or **Edge** with WebGPU
+- Falls back to smart rule-based replies if WebGPU is unavailable
 
-Optional `OPENAI_API_KEY` support is planned for LLM-enhanced coaching.
+See `src/lib/web-llm-coach.ts` and `src/lib/coach.ts`.
 
 ## Environment variables
 
-Copy `.env.example` to `.env.local`:
-
-| Variable | Purpose |
-|----------|---------|
-| `OPENAI_API_KEY` | Optional — future LLM coaching |
+No environment variables required for the demo.
 
 ## Monorepo
 

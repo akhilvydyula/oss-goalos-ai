@@ -2,9 +2,11 @@ package com.goalos.ai.ui.onboarding
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -76,7 +78,10 @@ private fun WelcomeScreen(modifier: Modifier, onStart: () -> Unit) {
         modifier = modifier.fillMaxSize().padding(20.dp).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        HeroCard(modifier = Modifier.padding(top = 24.dp)) {
+        Box(Modifier.padding(top = 32.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text("🎯", fontSize = 56.sp)
+        }
+        HeroCard(modifier = Modifier.padding(top = 8.dp)) {
             SectionLabel("GoalOS AI")
             GradientTitle(GoalOSConstants.TAGLINE)
             Text(

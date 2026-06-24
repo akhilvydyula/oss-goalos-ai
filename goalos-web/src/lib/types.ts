@@ -133,6 +133,8 @@ export interface WeeklyReport {
 export interface UserState {
   onboarded: boolean;
   privacyAccepted: boolean;
+  displayName?: string;
+  profilePhoto?: string;
   goal?: UserGoal;
   dna?: DnaAnswers;
   profile?: ProductivityProfile;

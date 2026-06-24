@@ -42,7 +42,7 @@ export function GoalOSApp() {
   const header = tabTitles[goalos.activeTab] ?? { title: "GoalOS AI" };
 
   return (
-    <div className="relative flex min-h-dvh flex-col pb-[4.5rem]">
+    <div className="relative flex h-full min-h-dvh flex-col pb-[4.5rem]">
       {goalos.activeTab !== "coach" && (
         <MobileHeader
           eyebrow="GoalOS AI"
@@ -51,7 +51,7 @@ export function GoalOSApp() {
         />
       )}
 
-      <main className="flex-1 px-4 py-4">
+      <main className="flex-1 overflow-y-auto overscroll-contain px-4 py-4">
         {goalos.activeTab === "today" && (
           <TodayDashboard
             state={goalos.state}
@@ -73,7 +73,9 @@ export function GoalOSApp() {
             state={goalos.state}
             coach={goalos.coach!}
             messages={goalos.coachMessages}
-            onSend={goalos.sendCoachMessage}
+            thinking={goalos.coachThinking}
+            webLLM={goalos.webLLM}
+            onSend={(text) => void goalos.sendCoachMessage(text)}
             onAction={goalos.handleCoachAction}
             onRefresh={goalos.refreshCoachChat}
             onStartSprint={() => goalos.setFocusSprintOpen(true)}
@@ -86,6 +88,7 @@ export function GoalOSApp() {
           <ProfileTab
             state={goalos.state}
             weeklyReport={goalos.weeklyReport!}
+            onUpdate={goalos.update}
             onReset={() => {
               localStorage.removeItem("goalos-user-state");
               window.location.reload();

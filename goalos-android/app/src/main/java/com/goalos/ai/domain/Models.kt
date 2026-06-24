@@ -114,6 +114,7 @@ data class UserState(
     val onboarded: Boolean = false,
     val privacyAccepted: Boolean = false,
     val usagePermissionGranted: Boolean = false,
+    val displayName: String = "",
     val goal: UserGoal? = null,
     val dna: DnaAnswers? = null,
     val profile: ProductivityProfile? = null,
@@ -123,7 +124,8 @@ data class UserState(
     val roadmapProgress: Int = 35,
     val energyToday: Int = 3,
     val moodToday: Int = 3,
-    val weeklyHistory: List<Int> = listOf(68, 72, 75, 71, 78, 74, 72)
+    val weeklyHistory: List<Int> = listOf(68, 72, 75, 71, 78, 74, 72),
+    val createdAt: String = ""
 )
 
 data class GoalTemplate(

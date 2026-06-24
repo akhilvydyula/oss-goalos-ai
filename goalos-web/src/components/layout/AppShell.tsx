@@ -27,7 +27,7 @@ const features = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="goalos-page-bg min-h-dvh">
-      <div className="mx-auto flex min-h-dvh max-w-7xl flex-col items-center gap-8 px-4 py-6 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-8 lg:py-10">
+      <div className="mx-auto flex min-h-dvh max-w-7xl flex-col items-center gap-8 px-0 py-0 lg:flex-row lg:items-center lg:justify-center lg:gap-10 lg:px-8 lg:py-10">
         <aside className="hidden max-w-xs shrink-0 lg:block xl:max-w-sm">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#2be7a8]/80">
             GoalOS AI
