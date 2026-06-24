@@ -1,74 +1,63 @@
 # Deployment
 
-GoalOS web deploys to **Cloudflare Pages** as a static export (`goalos-web/out`).
+GoalOS web is a **static export** deployed to **Cloudflare Workers Static Assets** (`goalos-web/out`).
 
-## Cloudflare Pages
+## Workers Builds (your current setup)
 
-### Connect Git (recommended)
+You connected a **Worker** (not classic Pages). Workers Builds has **no “output directory” field** in the dashboard — the static folder is set in **`wrangler.toml`**:
 
-1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
-2. Select repo `oss-goalos-ai`
-3. Build settings:
+```toml
+[assets]
+directory = "./goalos-web/out"
+```
 
-**Your current setup (repo root)** — matches Cloudflare logs:
+### Dashboard settings (repo root `/`)
 
 | Setting | Value |
 |---------|-------|
-| Framework preset | **None** |
-| Root directory | *(leave empty / repo root)* |
+| Git repository | `akhilvydyula/oss-goalos-ai` |
+| Root directory | `/` (repo root) |
 | Build command | `npm run build` |
-| Output directory | `goalos-web/out` |
+| **Deploy command** | `npx wrangler deploy` |
+| Version command | *(optional)* `npx wrangler versions upload` |
+| Production branch | `main` |
 
-The root `build` script runs `npm ci --prefix goalos-web` so `next` is available (Cloudflare only installs root deps by default).
+`wrangler.toml` at repo root points deploy at `./goalos-web/out`. The `name` field must match your Worker name in the dashboard (`oss-goalos-ai`).
 
-**Alternative (recommended)** — set root directory to `goalos-web`:
+### Cleaner alternative — root directory `goalos-web`
 
 | Setting | Value |
 |---------|-------|
-| Framework preset | **None** |
 | Root directory | `goalos-web` |
 | Build command | `npm ci && npm run build` |
-| Output directory | `out` |
+| Deploy command | `npx wrangler deploy` |
 
-4. Deploy — every push to `main` auto-redeploys.
+Uses `goalos-web/wrangler.toml` with `directory = "./out"` (avoids monorepo quirks).
 
-### Troubleshooting failed builds
+### Troubleshooting
 
 | Error | Fix |
 |-------|-----|
-| `github-pages-base.mjs` not found | Pull latest `main` — already removed |
-| `next-on-pages` / adapter errors | Set framework preset to **None**, not Next.js |
-| Build succeeds but site 404 | Output dir must be `out` (with root `goalos-web`) or `goalos-web/out` (repo root) |
-| `next: not found` | Root build must install `goalos-web` deps — use latest `npm run build` on `main` |
+| No “output directory” field | Normal for Workers — use `wrangler.toml` `[assets].directory` |
+| `next: not found` | Use latest `main` — root `npm run build` installs `goalos-web` deps |
+| Worker name mismatch | `wrangler.toml` `name` must equal dashboard Worker name |
+| Workspace / detection error | Set root directory to `goalos-web`, or use assets-only `wrangler.toml` (no `[build]`) |
+| Site 404 after deploy | Check `[assets].directory` matches where `next build` writes files |
 
 ### Optional environment variables
 
 | Variable | When |
 |----------|------|
-| `NEXT_PUBLIC_API_URL` | Only if you run the SaaS API locally or on a host. Demo auth works offline without it. |
-
-### Custom domain
-
-Project → **Custom domains** → add your domain. HTTPS is automatic when the zone is on Cloudflare.
-
-### GitHub Actions deploy (optional)
-
-Workflow: [`.github/workflows/cloudflare-pages.yml`](../.github/workflows/cloudflare-pages.yml)
-
-1. Create Pages project `goalos-ai` in Cloudflare
-2. Add secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-3. Set repo variable: `ENABLE_CLOUDFLARE_PAGES` = `true`
+| `NEXT_PUBLIC_API_URL` | Only if you run the SaaS API. Demo auth works offline without it. |
 
 ### Repo config
 
 | File | Purpose |
 |------|---------|
-| `goalos-web/wrangler.toml` | Build + output config (root = `goalos-web`) |
-| `wrangler.toml` | Monorepo fallback (root = repo root) |
-| `goalos-web/public/_routes.json` | Static-only (no Pages Functions) |
+| `wrangler.toml` | Output path for repo-root builds (`./goalos-web/out`) |
+| `goalos-web/wrangler.toml` | Output path when root directory is `goalos-web` |
 | `goalos-web/public/_redirects` | Trailing-slash route fixes |
 | `goalos-web/public/_headers` | CDN cache headers |
-| `goalos-web/.node-version` | Node 20 for builds |
 
 ### Smoke test
 
@@ -76,7 +65,12 @@ Workflow: [`.github/workflows/cloudflare-pages.yml`](../.github/workflows/cloudf
 - [ ] `/login/` — demo sign-in
 - [ ] `/web/` — product demo
 - [ ] `/app/` — enterprise shell
-- [ ] Coach tab responds (rule-based or WebLLM)
+
+---
+
+## Classic Cloudflare Pages (different product)
+
+If you create a **Pages** project instead of a Worker, you *will* see **Build output directory** in the UI — set it to `goalos-web/out` (repo root) or `out` (if root is `goalos-web`). No deploy command needed.
 
 ---
 
@@ -88,17 +82,3 @@ git push origin v0.3.0
 ```
 
 The [release workflow](../.github/workflows/release.yml) attaches `app-debug.apk` to the GitHub Release.
-
----
-
-## CI/CD
-
-```
-Push/PR → main
-    └── ci.yml — web lint + build, Android APK
-
-Tag v*.*.*
-    └── release.yml — GitHub Release + APK
-```
-
-Push to `main` also deploys web via Cloudflare Pages (Git integration or Actions workflow above).

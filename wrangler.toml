@@ -1,11 +1,9 @@
-# Monorepo fallback — use if Cloudflare root directory is the repo root (not goalos-web)
-name = "goalos-ai"
-pages_build_output_dir = "./goalos-web/out"
-compatibility_date = "2024-01-01"
+# Workers Static Assets — output path lives here (no "output directory" field in Workers Builds UI)
+# Worker name must match your Cloudflare dashboard Worker name exactly.
+name = "oss-goalos-ai"
+compatibility_date = "2026-06-24"
 
-[build]
-command = "npm run build"
-
-[build.environment]
-NODE_VERSION = "20"
-NPM_FLAGS = "--no-audit --no-fund"
+[assets]
+directory = "./goalos-web/out"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
