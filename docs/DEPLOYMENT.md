@@ -10,22 +10,25 @@ GoalOS web deploys to **Cloudflare Pages** as a static export (`goalos-web/out`)
 2. Select repo `oss-goalos-ai`
 3. Build settings:
 
-| Setting | Value |
-|---------|-------|
-| Production branch | `main` |
-| **Framework preset** | **None** (not Next.js — we use static export) |
-| Root directory | `goalos-web` |
-| Build command | `npm ci && npm run build` |
-| Output directory | `out` |
-| Node.js version | `20` |
-
-**If root directory is the repo root** (not `goalos-web`):
+**Your current setup (repo root)** — matches Cloudflare logs:
 
 | Setting | Value |
 |---------|-------|
 | Framework preset | **None** |
-| Build command | `npm run pages:build` |
+| Root directory | *(leave empty / repo root)* |
+| Build command | `npm run build` |
 | Output directory | `goalos-web/out` |
+
+The root `build` script runs `npm ci --prefix goalos-web` so `next` is available (Cloudflare only installs root deps by default).
+
+**Alternative (recommended)** — set root directory to `goalos-web`:
+
+| Setting | Value |
+|---------|-------|
+| Framework preset | **None** |
+| Root directory | `goalos-web` |
+| Build command | `npm ci && npm run build` |
+| Output directory | `out` |
 
 4. Deploy — every push to `main` auto-redeploys.
 
@@ -36,7 +39,7 @@ GoalOS web deploys to **Cloudflare Pages** as a static export (`goalos-web/out`)
 | `github-pages-base.mjs` not found | Pull latest `main` — already removed |
 | `next-on-pages` / adapter errors | Set framework preset to **None**, not Next.js |
 | Build succeeds but site 404 | Output dir must be `out` (with root `goalos-web`) or `goalos-web/out` (repo root) |
-| `npm ci` fails | Ensure root directory points at `goalos-web` (has its own `package-lock.json`) |
+| `next: not found` | Root build must install `goalos-web` deps — use latest `npm run build` on `main` |
 
 ### Optional environment variables
 
