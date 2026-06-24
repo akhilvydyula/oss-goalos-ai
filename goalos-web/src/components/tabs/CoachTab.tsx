@@ -78,9 +78,11 @@ export function CoachTab({
     progress: number;
     progressText: string;
     error: string | null;
+    loadedModel: string | null;
     loadModel: () => Promise<void>;
     isSupported: boolean;
     isChecking: boolean;
+    isReady: boolean;
   };
   onSend: (text: string) => void;
   onAction: (action: string) => void;
@@ -184,11 +186,16 @@ export function CoachTab({
 
       {webLLM.status === "error" && (
         <div className="goalos-card mb-3 shrink-0 border-rose-500/20 p-3">
-          <p className="text-xs text-rose-300">{webLLM.error}</p>
+          <p className="text-xs leading-relaxed text-rose-300">{webLLM.error}</p>
+          <ul className="mt-2 list-inside list-disc space-y-1 text-[10px] text-zinc-500">
+            <li>Use Chrome or Edge on desktop (not mobile)</li>
+            <li>Brave: turn off Shields for this site, enable WebGPU in flags</li>
+            <li>Allow ~600MB download; stay on this tab until loading finishes</li>
+          </ul>
           <button
             type="button"
             onClick={() => void webLLM.loadModel()}
-            className="mt-2 text-xs font-medium text-[#68a7ff] hover:underline"
+            className="mt-3 text-xs font-medium text-[#68a7ff] hover:underline"
           >
             Retry loading browser AI
           </button>
@@ -222,7 +229,7 @@ export function CoachTab({
         />
         <p className="text-center text-[10px] text-zinc-600">
           {aiReady
-            ? "Optional browser AI (Llama 3.2) — replies only; score still uses rules + your data"
+            ? `Browser AI active${webLLM.loadedModel ? ` (${webLLM.loadedModel.replace(/-q.*/, "")})` : ""} — optional LLM chat; score still uses rules + your data`
             : "Smart coach (rules + your data) — tap Load browser AI for optional LLM chat"}
         </p>
       </div>

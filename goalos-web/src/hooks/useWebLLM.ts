@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type WebLLMStatus,
   checkWebGPUSupport,
+  formatWebLLMError,
   generateCoachReplyWithWebLLM,
+  getLoadedWebLLMModelId,
   loadWebLLMEngine,
   resetWebLLMEngine,
 } from "@/lib/web-llm-coach";
@@ -14,6 +16,7 @@ export function useWebLLM(active: boolean) {
   const [progress, setProgress] = useState(0);
   const [progressText, setProgressText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loadedModel, setLoadedModel] = useState<string | null>(null);
   const loadPromiseRef = useRef<Promise<void> | null>(null);
   const supportedRef = useRef(false);
   const statusRef = useRef<WebLLMStatus>("checking");
@@ -34,7 +37,9 @@ export function useWebLLM(active: boolean) {
         setStatusSafe("idle");
       } else {
         setStatusSafe("unsupported");
-        setError("WebGPU not available. Use Chrome or Edge for browser AI.");
+        setError(
+          "WebGPU not available. Use Chrome or Edge on desktop (Brave: enable WebGPU in brave://flags)."
+        );
       }
     });
 
@@ -73,13 +78,16 @@ export function useWebLLM(active: boolean) {
           setProgress(Math.round(p * 100));
           setProgressText(text);
         });
+        const modelId = getLoadedWebLLMModelId();
+        setLoadedModel(modelId);
         setStatusSafe("ready");
         setProgress(100);
         setProgressText("");
       } catch (err) {
         resetWebLLMEngine();
+        setLoadedModel(null);
         setStatusSafe("error");
-        setError(err instanceof Error ? err.message : "Failed to load browser AI model");
+        setError(formatWebLLMError(err));
         throw err;
       } finally {
         loadPromiseRef.current = null;
@@ -90,29 +98,16 @@ export function useWebLLM(active: boolean) {
     await loadTask;
   }, [setStatusSafe]);
 
-  const ensureReady = useCallback(async (): Promise<boolean> => {
-    if (checkPromiseRef.current) {
-      await checkPromiseRef.current;
-    }
-    if (!supportedRef.current) return false;
-    if (statusRef.current === "ready") return true;
-    try {
-      await loadModel();
-      return true;
-    } catch {
-      return false;
-    }
-  }, [loadModel]);
-
   return {
     status,
     progress,
     progressText,
     error,
+    loadedModel,
     loadModel,
-    ensureReady,
     generateCoachReplyWithWebLLM,
     isSupported: status !== "unsupported" && status !== "checking",
     isChecking: status === "checking",
+    isReady: status === "ready",
   };
 }

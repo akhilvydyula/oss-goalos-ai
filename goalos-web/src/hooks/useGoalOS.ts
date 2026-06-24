@@ -147,22 +147,17 @@ export function useGoalOS() {
 
       let replyText: string;
 
-      if (webLLM.isSupported) {
-        const ready = await webLLM.ensureReady();
-        if (ready) {
-          try {
-            replyText = await generateCoachReplyWithWebLLM({
-              state,
-              score,
-              coach,
-              history: [...coachMessages, userMsg],
-              userMessage: trimmed,
-            });
-          } catch (err) {
-            console.warn("[GoalOS] WebLLM reply failed, using smart coach:", err);
-            replyText = fallbackCoachReply(trimmed, state, score, coach);
-          }
-        } else {
+      if (webLLM.isReady) {
+        try {
+          replyText = await generateCoachReplyWithWebLLM({
+            state,
+            score,
+            coach,
+            history: [...coachMessages, userMsg],
+            userMessage: trimmed,
+          });
+        } catch (err) {
+          console.warn("[GoalOS] WebLLM reply failed, using smart coach:", err);
           replyText = fallbackCoachReply(trimmed, state, score, coach);
         }
       } else {

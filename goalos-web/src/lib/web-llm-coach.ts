@@ -3,8 +3,14 @@ import { formatMinutes } from "./demo-data";
 import { replyTo } from "./coach";
 import type { MLCEngineInterface } from "@mlc-ai/web-llm";
 
-/** Smallest prebuilt model — ~600MB first download, cached in browser after. */
-export const WEB_LLM_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
+/** Tried in order — falls back to smaller models if GPU memory or download fails. */
+export const WEB_LLM_MODEL_CANDIDATES = [
+  "Llama-3.2-1B-Instruct-q4f16_1-MLC",
+  "SmolLM2-360M-Instruct-q4f16_1-MLC",
+  "SmolLM2-135M-Instruct-q0f16-MLC",
+] as const;
+
+export const WEB_LLM_MODEL = WEB_LLM_MODEL_CANDIDATES[0];
 
 export type WebLLMStatus =
   | "checking"
@@ -14,16 +20,79 @@ export type WebLLMStatus =
   | "error"
   | "unsupported";
 
+export function isBraveBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const nav = navigator as Navigator & { brave?: { isBrave?: () => Promise<boolean> } };
+  return Boolean(nav.brave?.isBrave) || /Brave/i.test(navigator.userAgent);
+}
+
 export async function checkWebGPUSupport(): Promise<boolean> {
   if (typeof navigator === "undefined" || !("gpu" in navigator)) return false;
   try {
-    const gpu = navigator.gpu as { requestAdapter: () => Promise<unknown | null> } | undefined;
-    if (!gpu) return false;
-    const adapter = await gpu.requestAdapter();
-    return adapter !== null;
+    const gpu = navigator.gpu as {
+      requestAdapter: (opts?: { powerPreference?: string }) => Promise<unknown | null>;
+    };
+    const adapter = await gpu.requestAdapter({ powerPreference: "high-performance" });
+    if (!adapter) {
+      const fallback = await gpu.requestAdapter();
+      return fallback !== null;
+    }
+    return true;
   } catch {
     return false;
   }
+}
+
+export function formatWebLLMError(err: unknown, modelId?: string): string {
+  const raw = err instanceof Error ? err.message : String(err ?? "Unknown error");
+  const lower = raw.toLowerCase();
+  const modelHint = modelId ? ` (model: ${modelId})` : "";
+
+  if (lower.includes("webgpu") || lower.includes("gpu")) {
+    return (
+      "WebGPU is unavailable. Use Chrome or Edge on desktop, enable GPU acceleration in settings, " +
+      "then refresh. Brave users: enable WebGPU at brave://flags/#enable-unsafe-webgpu."
+    );
+  }
+
+  if (
+    lower.includes("failed to fetch") ||
+    lower.includes("network") ||
+    lower.includes("load failed") ||
+    lower.includes("cors")
+  ) {
+    const brave = isBraveBrowser();
+    return (
+      "Model download blocked. Check your internet connection" +
+      (brave
+        ? " and disable Brave Shields for this site (lion icon in the address bar), then retry."
+        : ", disable ad blockers for this site, then retry.") +
+      modelHint
+    );
+  }
+
+  if (
+    lower.includes("device lost") ||
+    lower.includes("out of memory") ||
+    lower.includes("oom") ||
+    lower.includes("vram")
+  ) {
+    return (
+      "GPU ran out of memory loading the model. Close other tabs/apps and retry — " +
+      "we automatically try smaller models on each attempt." +
+      modelHint
+    );
+  }
+
+  if (lower.includes("cache") || lower.includes("indexeddb")) {
+    return "Browser storage error. Clear site data for this page in browser settings, then retry.";
+  }
+
+  if (raw.trim()) {
+    return `${raw}${modelHint}`;
+  }
+
+  return `Failed to load browser AI model${modelHint}. Use Chrome/Edge on desktop with WebGPU enabled.`;
 }
 
 export function buildCoachSystemPrompt(
@@ -55,37 +124,72 @@ Never mention API keys, servers, or that you are a language model.`;
 }
 
 let enginePromise: Promise<MLCEngineInterface> | null = null;
+let loadedModelId: string | null = null;
 let loadProgressCallback: ((progress: number, text: string) => void) | undefined;
 
+async function createEngineForModel(modelId: string): Promise<MLCEngineInterface> {
+  const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
+  return CreateMLCEngine(modelId, {
+    initProgressCallback: (report) => {
+      loadProgressCallback?.(report.progress, report.text);
+    },
+  });
+}
+
+export function getLoadedWebLLMModelId(): string | null {
+  return loadedModelId;
+}
+
 export async function loadWebLLMEngine(
-  onProgress?: (progress: number, text: string) => void
+  onProgress?: (progress: number, text: string) => void,
+  modelCandidates: readonly string[] = WEB_LLM_MODEL_CANDIDATES
 ): Promise<MLCEngineInterface> {
   const supported = await checkWebGPUSupport();
   if (!supported) {
-    throw new Error("WebGPU is not supported. Use Chrome or Edge on desktop.");
+    throw new Error(formatWebLLMError(new Error("WebGPU not available")));
   }
 
   if (onProgress) loadProgressCallback = onProgress;
 
-  if (!enginePromise) {
-    enginePromise = (async () => {
-      const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
-      return CreateMLCEngine(WEB_LLM_MODEL, {
-        initProgressCallback: (report) => {
-          loadProgressCallback?.(report.progress, report.text);
-        },
-      });
-    })().catch((err) => {
-      enginePromise = null;
-      throw err;
-    });
+  if (enginePromise && loadedModelId) {
+    return enginePromise;
   }
+
+  enginePromise = (async () => {
+    const errors: string[] = [];
+
+    for (let i = 0; i < modelCandidates.length; i++) {
+      const modelId = modelCandidates[i]!;
+      try {
+        if (i > 0) {
+          loadProgressCallback?.(
+            0,
+            `Retrying with smaller model (${modelId})…`
+          );
+        }
+        const engine = await createEngineForModel(modelId);
+        loadedModelId = modelId;
+        return engine;
+      } catch (err) {
+        const msg = formatWebLLMError(err, modelId);
+        errors.push(msg);
+        loadProgressCallback?.(0, `Failed ${modelId} — trying fallback…`);
+      }
+    }
+
+    throw new Error(errors[errors.length - 1] ?? formatWebLLMError(new Error("All models failed")));
+  })().catch((err) => {
+    enginePromise = null;
+    loadedModelId = null;
+    throw err;
+  });
 
   return enginePromise;
 }
 
 export function resetWebLLMEngine(): void {
   enginePromise = null;
+  loadedModelId = null;
   loadProgressCallback = undefined;
 }
 
