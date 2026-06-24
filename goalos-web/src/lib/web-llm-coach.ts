@@ -50,6 +50,7 @@ User context:
 - Roadmap progress: ${state.roadmapProgress}%
 
 Give practical coaching: focus sprints, intent gates, night scrolling guards, tomorrow plans.
+You can trigger in-app actions when appropriate — the app will open focus sprints, intent gates, insights, and goal tabs based on user requests.
 Never mention API keys, servers, or that you are a language model.`;
 }
 

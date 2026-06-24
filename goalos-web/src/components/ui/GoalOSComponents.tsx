@@ -47,14 +47,16 @@ export function MobileHeader({
   subtitle?: string;
 }) {
   return (
-    <header className="sticky top-0 z-10 shrink-0 border-b border-white/5 bg-[#06070d]/90 px-5 py-3 backdrop-blur-xl">
+    <header className="sticky top-0 z-10 shrink-0 border-b border-white/[0.06] bg-[#06070d]/85 px-5 py-3.5 backdrop-blur-xl">
       {eyebrow && (
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#2be7a8]/80">
           {eyebrow}
         </p>
       )}
-      <h1 className="mt-0.5 text-lg font-semibold text-zinc-50">{title}</h1>
-      {subtitle && <p className="mt-0.5 text-xs text-zinc-500">{subtitle}</p>}
+      <h1 className="mt-0.5 text-xl font-semibold tracking-tight text-zinc-50">{title}</h1>
+      {subtitle && (
+        <p className="mt-1 truncate text-xs text-zinc-500">{subtitle}</p>
+      )}
     </header>
   );
 }
@@ -62,10 +64,14 @@ export function MobileHeader({
 export function MetricCard({
   label,
   value,
+  sub,
+  icon,
   accent = "default",
 }: {
   label: string;
   value: string;
+  sub?: string;
+  icon?: React.ReactNode;
   accent?: "default" | "positive" | "warning";
 }) {
   const valueColor =
@@ -77,8 +83,12 @@ export function MetricCard({
 
   return (
     <div className="goalos-card p-4">
-      <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{label}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-500">{label}</p>
+        {icon && <span className="text-zinc-500">{icon}</span>}
+      </div>
       <p className={`mt-1.5 text-xl font-semibold tabular-nums ${valueColor}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-[11px] text-zinc-500">{sub}</p>}
     </div>
   );
 }

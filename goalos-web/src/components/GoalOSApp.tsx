@@ -57,7 +57,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
           state={goalos.state}
           score={goalos.score!}
           coach={goalos.coach!}
-          onStartSprint={() => goalos.setFocusSprintOpen(true)}
+          onStartSprint={() => goalos.openFocusSprint()}
           onIntentGate={(appId) => goalos.setIntentAppId(appId)}
           layout={isWeb ? "web" : "mobile"}
         />
@@ -79,7 +79,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
           onSend={(text) => void goalos.sendCoachMessage(text)}
           onAction={goalos.handleCoachAction}
           onRefresh={goalos.refreshCoachChat}
-          onStartSprint={() => goalos.setFocusSprintOpen(true)}
+          onStartSprint={() => goalos.openFocusSprint()}
         />
       )}
       {goalos.activeTab === "insights" && (
@@ -134,8 +134,10 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
         {goalos.focusSprintOpen && (
           <FocusSprintModal
             goal={goalos.state.goal}
+            initialTitle={goalos.sprintPrefill?.title}
+            initialDuration={goalos.sprintPrefill?.durationMinutes}
             onComplete={goalos.completeFocusSprint}
-            onClose={() => goalos.setFocusSprintOpen(false)}
+            onClose={goalos.closeFocusSprint}
           />
         )}
       </div>
@@ -144,7 +146,9 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
 
   return (
     <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="flex shrink-0 justify-end px-3 pt-2 lg:hidden">
+      <div className="goalos-ambient" aria-hidden />
+
+      <div className="relative z-10 flex shrink-0 justify-end px-3 pt-2 lg:hidden">
         <DemoSwitcher active="mobile" />
       </div>
 
@@ -156,7 +160,7 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
         />
       )}
 
-      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+      <main className="relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
         {tabContent}
       </main>
 
@@ -173,8 +177,10 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
       {goalos.focusSprintOpen && (
         <FocusSprintModal
           goal={goalos.state.goal}
+          initialTitle={goalos.sprintPrefill?.title}
+          initialDuration={goalos.sprintPrefill?.durationMinutes}
           onComplete={goalos.completeFocusSprint}
-          onClose={() => goalos.setFocusSprintOpen(false)}
+          onClose={goalos.closeFocusSprint}
         />
       )}
     </div>

@@ -128,6 +128,19 @@ export interface WeeklyReport {
   identity: ProductivityIdentity;
   nextWeekGoal: string;
   distractionReductionPercent: number;
+  coachLetter?: string;
+}
+
+export interface RoadmapMilestone {
+  week: number;
+  title: string;
+  minutesPerDay: number;
+  completed?: boolean;
+}
+
+export interface CoachMemory {
+  lastCoachLetter?: string;
+  lastInsightsAt?: string;
 }
 
 export interface UserState {
@@ -141,9 +154,11 @@ export interface UserState {
   apps: TrackedApp[];
   intentCheckIns: IntentCheckIn[];
   focusSprints: FocusSprint[];
+  roadmap?: RoadmapMilestone[];
   roadmapProgress: number;
   energyToday: number;
   moodToday: number;
   weeklyHistory: number[];
+  coachMemory?: CoachMemory;
   createdAt: string;
 }

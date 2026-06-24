@@ -89,6 +89,32 @@ body {
   transform: translateY(0);
 }
 
+.goalos-btn-ghost {
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+.goalos-btn-ghost:hover {
+  opacity: 0.85;
+}
+
+.goalos-btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f4f4f5;
+  font-weight: 600;
+  border-radius: 1rem;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.goalos-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(43, 231, 168, 0.25);
+  transform: translateY(-1px);
+}
+
 .goalos-chip {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -206,4 +232,46 @@ body {
 
 .animate-fade-up {
   animation: fade-up 0.35s ease-out forwards;
+}
+
+@keyframes score-ring {
+  from {
+    stroke-dashoffset: 390;
+  }
+}
+
+.score-ring-animate {
+  animation: score-ring 1.2s ease-out forwards;
+}
+
+.goalos-ambient {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.goalos-ambient::before,
+.goalos-ambient::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+
+.goalos-ambient::before {
+  width: 280px;
+  height: 280px;
+  top: -80px;
+  left: -60px;
+  background: rgba(43, 231, 168, 0.08);
+}
+
+.goalos-ambient::after {
+  width: 240px;
+  height: 240px;
+  top: 20%;
+  right: -80px;
+  background: rgba(104, 167, 255, 0.1);
 }

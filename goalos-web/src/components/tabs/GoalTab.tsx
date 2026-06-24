@@ -1,6 +1,9 @@
 import type { UserState, AppClassification } from "@/lib/types";
 import { formatMinutes } from "@/lib/demo-data";
 import { IDENTITY_DESCRIPTIONS } from "@/lib/constants";
+import { AppIcon, SectionLabel } from "@/components/ui/AppIcon";
+import { roadmapSummary } from "@/lib/agent";
+import { Target, Map } from "lucide-react";
 
 const CLASS_OPTIONS: { value: AppClassification; label: string; color: string }[] = [
   { value: "goal-supporting", label: "Goal", color: "bg-emerald-500/20 text-emerald-300" },
@@ -20,9 +23,12 @@ export function GoalTab({
 }) {
   return (
     <div className="space-y-5">
-      <div className="goalos-card p-5">
-        <p className="text-xs uppercase tracking-wide text-zinc-500">Active Goal</p>
-        <h2 className="mt-1 text-xl font-semibold">{state.goal?.title}</h2>
+      <div className="goalos-card goalos-card-glow p-5">
+        <div className="flex items-center gap-2">
+          <Target className="h-4 w-4 text-[#68a7ff]" />
+          <SectionLabel>Active goal</SectionLabel>
+        </div>
+        <h2 className="mt-2 text-xl font-semibold text-zinc-50">{state.goal?.title}</h2>
         <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
           <div>
             <p className="text-zinc-500">Timeline</p>
@@ -51,6 +57,38 @@ export function GoalTab({
         </div>
       </div>
 
+      {state.roadmap && state.roadmap.length > 0 && (
+        <div className="goalos-card p-5">
+          <div className="flex items-center gap-2">
+            <Map className="h-4 w-4 text-[#2be7a8]" />
+            <SectionLabel>AI roadmap agent</SectionLabel>
+          </div>
+          <p className="mt-2 text-sm text-zinc-400">{roadmapSummary(state.roadmap)}</p>
+          <div className="mt-4 space-y-2">
+            {state.roadmap.map((m) => (
+              <div
+                key={m.week}
+                className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm ${
+                  m.completed
+                    ? "border-[#2be7a8]/20 bg-[#2be7a8]/5"
+                    : "border-white/10 bg-white/[0.03]"
+                }`}
+              >
+                <div>
+                  <p className="font-medium text-zinc-200">
+                    Week {m.week}: {m.title}
+                  </p>
+                  <p className="text-xs text-zinc-500">{m.minutesPerDay} min/day</p>
+                </div>
+                {m.completed && (
+                  <span className="text-[10px] font-medium uppercase text-[#2be7a8]">Done</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {state.profile && (
         <div className="goalos-card p-4">
           <p className="text-sm font-medium text-[#2be7a8]">{state.profile.identity}</p>
@@ -61,14 +99,17 @@ export function GoalTab({
       )}
 
       <div>
-        <h3 className="mb-3 text-sm font-medium text-zinc-400">App Classification</h3>
-        <div className="space-y-3">
+        <SectionLabel>App classification</SectionLabel>
+        <div className="mt-3 space-y-3">
           {state.apps.map((app) => (
             <div key={app.id} className="goalos-card p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">{app.name}</p>
-                  <p className="text-xs text-zinc-500">{formatMinutes(app.minutesToday)} today</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <AppIcon name={app.name} size="sm" />
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-zinc-100">{app.name}</p>
+                    <p className="text-xs text-zinc-500">{formatMinutes(app.minutesToday)} today</p>
+                  </div>
                 </div>
                 {(app.classification === "mixed" || app.classification === "distracting") && (
                   <button

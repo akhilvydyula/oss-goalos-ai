@@ -119,7 +119,7 @@ export function CoachTab({
               <AiStatusBadge status={webLLM.status} isChecking={webLLM.isChecking} />
             </div>
             <p className="mt-0.5 text-[11px] text-zinc-500">
-              Score {coach.scoreContext}/100 · {state.profile?.identity ?? "Your DNA"}
+              Score {coach.scoreContext}/100 · Agent can open sprints, intent gate & insights
             </p>
           </div>
         </div>
@@ -212,10 +212,7 @@ export function CoachTab({
         <SuggestionChips items={prompts.slice(0, 2)} onSelect={onSend} />
         <SuggestionChips
           items={actions.slice(0, 3)}
-          onSelect={(action) => {
-            if (action.toLowerCase().includes("sprint")) onStartSprint();
-            onAction(action);
-          }}
+          onSelect={(action) => onAction(action)}
         />
         <CoachChatInput
           value={input}

@@ -19,6 +19,15 @@ export function InsightsTab({
     <div className={layout === "web" ? "grid gap-5 lg:grid-cols-2" : "space-y-5"}>
       <WeeklyIdentityCard report={weeklyReport} goalTitle={state.goal?.title ?? "Your Goal"} />
 
+      {weeklyReport.coachLetter && (
+        <div className="goalos-card border-[#68a7ff]/20 bg-[#68a7ff]/5 p-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#68a7ff]/80">
+            Insights agent
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-zinc-300">{weeklyReport.coachLetter}</p>
+        </div>
+      )}
+
       <div className="goalos-card p-4">
         <h3 className="text-sm font-medium text-zinc-400">Score Breakdown</h3>
         <ul className="mt-3 space-y-2 text-sm">

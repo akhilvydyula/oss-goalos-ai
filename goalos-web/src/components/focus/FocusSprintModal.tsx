@@ -8,19 +8,18 @@ const DURATIONS = [15, 25, 45, 60];
 
 export function FocusSprintModal({
   goal,
+  initialTitle,
+  initialDuration,
   onComplete,
   onClose,
 }: {
   goal?: UserGoal;
+  initialTitle?: string;
+  initialDuration?: number;
   onComplete: (title: string, durationMinutes: number) => void;
   onClose: () => void;
 }) {
-  const [duration, setDuration] = useState(25);
-  const [running, setRunning] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(25 * 60);
-  const [done, setDone] = useState(false);
-
-  const sprintTitle =
+  const defaultTitle =
     goal?.template === "data-engineering-job"
       ? "SQL Sprint"
       : goal?.template === "software-interview"
@@ -28,6 +27,13 @@ export function FocusSprintModal({
         : goal?.template === "founder-mode"
           ? "Build Sprint"
           : "Focus Sprint";
+
+  const [duration, setDuration] = useState(initialDuration ?? 25);
+  const [running, setRunning] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState((initialDuration ?? 25) * 60);
+  const [done, setDone] = useState(false);
+
+  const sprintTitle = initialTitle ?? defaultTitle;
 
   useEffect(() => {
     if (!running || done) return;
