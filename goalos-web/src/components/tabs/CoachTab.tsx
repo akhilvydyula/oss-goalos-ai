@@ -66,7 +66,6 @@ export function CoachTab({
   onSend,
   onAction,
   onRefresh,
-  onStartSprint,
 }: {
   state: UserState;
   coach: CoachRecommendation;
@@ -84,7 +83,6 @@ export function CoachTab({
   onSend: (text: string) => void;
   onAction: (action: string) => void;
   onRefresh: () => void;
-  onStartSprint: () => void;
 }) {
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);

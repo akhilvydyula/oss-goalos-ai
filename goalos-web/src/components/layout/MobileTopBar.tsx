@@ -1,5 +1,4 @@
 import type { TabId } from "@/lib/types";
-import { Crown } from "lucide-react";
 
 const MODE_BADGE: Record<"demo" | "live", { label: string; className: string }> = {
   demo: { label: "Sample data", className: "border-amber-500/30 bg-amber-500/10 text-amber-300" },

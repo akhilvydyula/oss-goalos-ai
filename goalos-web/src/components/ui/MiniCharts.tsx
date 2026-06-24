@@ -52,11 +52,19 @@ export function BarChart({
 }) {
   const max = Math.max(...data, 1);
   const barW = 100 / data.length;
+  const viewHeight = Math.round(height * 0.625);
 
   return (
-    <svg viewBox="0 0 100 40" className="h-16 w-full" preserveAspectRatio="none" aria-hidden>
+    <svg
+      viewBox={`0 0 100 ${viewHeight}`}
+      className="w-full"
+      style={{ height }}
+      preserveAspectRatio="none"
+      aria-hidden
+      aria-label={`Bar chart: ${labels.join(", ")}`}
+    >
       {data.map((v, i) => {
-        const h = (v / max) * 36;
+        const h = (v / max) * (viewHeight - 4);
         const x = i * barW + barW * 0.15;
         const w = barW * 0.7;
         const isHi = i === highlightIndex;
@@ -64,7 +72,7 @@ export function BarChart({
           <rect
             key={i}
             x={x}
-            y={40 - h}
+            y={viewHeight - h}
             width={w}
             height={h}
             rx={2}

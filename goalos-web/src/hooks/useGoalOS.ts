@@ -33,7 +33,7 @@ export function useGoalOS() {
   const webLLM = useWebLLM(activeTab === "coach");
 
   useEffect(() => {
-    setState(loadState());
+    void Promise.resolve().then(() => setState(loadState()));
   }, []);
 
   const persist = useCallback((next: UserState) => {
@@ -128,7 +128,7 @@ export function useGoalOS() {
         });
       }
     },
-    [state, persist]
+    []
   );
 
   const sendCoachMessage = useCallback(

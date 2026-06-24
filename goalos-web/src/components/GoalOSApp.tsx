@@ -101,7 +101,6 @@ export function GoalOSApp({ variant = "mobile" }: { variant?: GoalOSVariant }) {
           onSend={(text) => void goalos.sendCoachMessage(text)}
           onAction={goalos.handleCoachAction}
           onRefresh={goalos.refreshCoachChat}
-          onStartSprint={() => goalos.openFocusSprint()}
         />
       )}
       {goalos.activeTab === "insights" && (

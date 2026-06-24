@@ -1,5 +1,4 @@
 import type { ProductivityIdentity, ScoreBreakdown, TrackedApp, WeeklyReport } from "../types";
-import { formatMinutes } from "../demo-data";
 
 export function enrichWeeklyReport(input: {
   base: WeeklyReport;
