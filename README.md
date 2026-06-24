@@ -27,6 +27,22 @@
 
 ---
 
+## 📸 Preview
+
+<p align="center">
+  <img src="goalos-web/public/media/web-preview.png" alt="GoalOS web dashboard" width="720" />
+</p>
+
+<p align="center">
+  <img src="goalos-web/public/media/coach-preview.png" alt="GoalOS AI Coach" width="320" />
+  &nbsp;
+  <img src="goalos-web/public/media/android-preview.png" alt="GoalOS Android app" width="320" />
+</p>
+
+<p align="center"><em>Web dashboard · AI Coach · Android companion</em></p>
+
+---
+
 GoalOS AI helps you align daily screen time with your goals through scoring, AI coaching, intent checks, and focus sprints. **Local-first** — your data stays on your device.
 
 ## ✨ Features

@@ -53,9 +53,20 @@ npm start
 
 For [Render](https://render.com) or similar hosts, bind to `0.0.0.0:$PORT`.
 
-## Screenshots
+## Screenshots & walkthrough
 
-> Add screenshots after your first deploy — recommended: Today dashboard, Coach chat, Onboarding.
+| Preview | File |
+|---------|------|
+| Web dashboard | `public/media/web-preview.png` |
+| AI Coach | `public/media/coach-preview.png` |
+| Mobile demo | `public/media/mobile-preview.png` |
+| Android app | `public/media/android-preview.png` |
+
+The [landing page](http://localhost:3000) includes an auto-playing **product walkthrough** (image reel) and screenshot gallery.
+
+<p align="center">
+  <img src="public/media/web-preview.png" alt="Web dashboard" width="640" />
+</p>
 
 ## Architecture
 

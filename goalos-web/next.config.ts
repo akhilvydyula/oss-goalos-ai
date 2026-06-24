@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   basePath: isGithubPages ? "/goalos-ai" : "",
   assetPrefix: isGithubPages ? "/goalos-ai" : undefined,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isGithubPages ? "/goalos-ai" : "",
+  },
+  images: {
+    unoptimized: true,
+  },
   turbopack: {},
 };
 
