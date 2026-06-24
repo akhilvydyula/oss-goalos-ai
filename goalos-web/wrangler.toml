@@ -1,4 +1,11 @@
-# Cloudflare Pages — deploy with: npx wrangler pages deploy out --project-name=goalos-ai
+# Cloudflare Pages — static export (root directory: goalos-web)
 name = "goalos-ai"
-pages_build_output_dir = "out"
+pages_build_output_dir = "./out"
 compatibility_date = "2024-01-01"
+
+[build]
+command = "npm ci && npm run build"
+
+[build.environment]
+NODE_VERSION = "20"
+NPM_FLAGS = "--no-audit --no-fund"

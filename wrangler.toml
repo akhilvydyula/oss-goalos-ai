@@ -1,0 +1,11 @@
+# Monorepo fallback — use if Cloudflare root directory is the repo root (not goalos-web)
+name = "goalos-ai"
+pages_build_output_dir = "./goalos-web/out"
+compatibility_date = "2024-01-01"
+
+[build]
+command = "npm run pages:build"
+
+[build.environment]
+NODE_VERSION = "20"
+NPM_FLAGS = "--no-audit --no-fund"

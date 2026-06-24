@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "npm run dev --prefix goalos-web",
     "build": "npm run build --prefix goalos-web",
+    "pages:build": "npm ci --prefix goalos-web && npm run build --prefix goalos-web",
     "start": "npm run start --prefix goalos-web",
     "lint": "npm run lint --prefix goalos-web",
     "saas:build": "npm run build --workspace=@goalos/shared && npm run db:generate --workspace=@goalos/database && npm run build --workspace=@goalos/database",

@@ -20,8 +20,12 @@
     "dev": "next dev",
     "prebuild": "node scripts/write-manifest.mjs",
     "build": "next build",
+    "build:cloudflare": "npm run build",
     "start": "next start",
     "lint": "eslint"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
     "@mlc-ai/web-llm": "^0.2.84",
