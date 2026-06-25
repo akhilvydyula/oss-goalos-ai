@@ -6,8 +6,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akhilvydyula/goalos-ai.git"
+    "url": "https://github.com/akhilvydyula/oss-goalos-ai.git"
   },
+  "homepage": "https://oss-goalos-ai.akhilvydyula1111.workers.dev/",
   "keywords": [
     "productivity",
     "ai-coach",

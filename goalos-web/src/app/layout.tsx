@@ -13,10 +13,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import { LIVE_DEMO_URL } from "@/lib/constants";
+
 export const metadata: Metadata = {
   title: "GoalOS AI — Turn screen time into goal time",
   description:
     "AI-powered productivity operating system that helps you align mobile usage with your goals.",
+  metadataBase: new URL(LIVE_DEMO_URL),
+  openGraph: {
+    title: "GoalOS AI — Turn screen time into goal time",
+    description:
+      "AI-powered productivity OS — align screen time with your goals. Open source, local-first.",
+    url: LIVE_DEMO_URL,
+    siteName: "GoalOS AI",
+    type: "website",
+  },
   manifest: "/manifest.json",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
   appleWebApp: {

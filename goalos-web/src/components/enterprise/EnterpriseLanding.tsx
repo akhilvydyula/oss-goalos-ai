@@ -14,7 +14,7 @@ import {
   Brain,
 } from "lucide-react";
 import { goalosApi } from "@/lib/api/goalos-api";
-import { TAGLINE, SUBTAGLINE, PRODUCT_PROMISE } from "@/lib/constants";
+import { TAGLINE, SUBTAGLINE, PRODUCT_PROMISE, LIVE_DEMO_URL, GITHUB_REPO_URL } from "@/lib/constants";
 
 const productLoop = [
   "Goal Setup",
@@ -77,11 +77,19 @@ export function EnterpriseLanding() {
             </span>
           </div>
           <nav className="flex items-center gap-3">
+            <a
+              href={LIVE_DEMO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden text-sm text-[#22c55e] hover:text-[#4ade80] sm:inline"
+            >
+              Live demo
+            </a>
             <Link href="/web" className="hidden text-sm text-zinc-500 hover:text-zinc-300 sm:inline">
               Try product
             </Link>
             <a
-              href="https://github.com/akhilvydyula/oss-goalos-ai"
+              href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 sm:flex"
@@ -120,6 +128,15 @@ export function EnterpriseLanding() {
           </div>
           <p className="mt-4 text-xs text-zinc-600">
             {apiLive ? "Platform API connected" : "Demo: admin@demo.goalos / Demo1234!"}
+            {" · "}
+            <a
+              href={LIVE_DEMO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-zinc-500 hover:text-[#22c55e]"
+            >
+              {LIVE_DEMO_URL.replace(/^https:\/\//, "")}
+            </a>
           </p>
         </div>
       </section>
@@ -188,12 +205,21 @@ export function EnterpriseLanding() {
           Product documentation
         </a>
         {" · "}
+        <a
+          href={LIVE_DEMO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-zinc-400"
+        >
+          Live demo
+        </a>
+        {" · "}
         <Link href="/web" className="hover:text-zinc-400">
           Sandbox
         </Link>
         {" · "}
         <a
-          href="https://github.com/akhilvydyula/oss-goalos-ai"
+          href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-zinc-400"

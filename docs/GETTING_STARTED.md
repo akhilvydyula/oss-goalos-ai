@@ -22,7 +22,7 @@ npm install
 npm run dev
 ```
 
-Open **http://localhost:3000**
+Open **http://localhost:3000** — or the [**live demo**](https://oss-goalos-ai.akhilvydyula1111.workers.dev/) (`admin@demo.goalos` / `Demo1234!`)
 
 ### Production build
 

@@ -19,8 +19,8 @@ Please read [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md). Be respectful and constr
 
 ## Ways to contribute
 
-- 🐛 **Bug reports** — [Open an issue](https://github.com/akhilvydyula/goalos-ai/issues/new?template=bug_report.yml)
-- ✨ **Feature requests** — [Open an issue](https://github.com/akhilvydyula/goalos-ai/issues/new?template=feature_request.yml)
+- 🐛 **Bug reports** — [Open an issue](https://github.com/akhilvydyula/oss-goalos-ai/issues/new?template=bug_report.yml)
+- ✨ **Feature requests** — [Open an issue](https://github.com/akhilvydyula/oss-goalos-ai/issues/new?template=feature_request.yml)
 - 🔧 **Code** — Fix bugs, improve UI, sync scoring logic across platforms
 - 📖 **Docs** — Improve README, `docs/`, or inline comments
 - 🎨 **Design** — UI/UX polish, Figma updates (see `goalos-android/DESIGN_FIGMA.md`)
@@ -39,8 +39,8 @@ Please read [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md). Be respectful and constr
 ### Clone and run (web)
 
 ```bash
-git clone https://github.com/akhilvydyula/goalos-ai.git
-cd goalos-ai
+git clone https://github.com/akhilvydyula/oss-goalos-ai.git
+cd oss-goalos-ai
 npm install          # installs root scripts only
 cd goalos-web
 npm install
@@ -63,7 +63,7 @@ See [docs/GETTING_STARTED.md](./docs/GETTING_STARTED.md) for detailed setup.
 ## Project structure
 
 ```
-goalos-ai/
+oss-goalos-ai/
 ├── goalos-web/          # Next.js web app (local-first demo)
 ├── goalos-android/      # Kotlin + Jetpack Compose native app
 ├── docs/                # Architecture & guides
@@ -155,7 +155,7 @@ git push origin v0.3.0
 
 ## Questions?
 
-- [Open a discussion](https://github.com/akhilvydyula/goalos-ai/discussions) for questions
-- [Open an issue](https://github.com/akhilvydyula/goalos-ai/issues) for bugs/features
+- [Open a discussion](https://github.com/akhilvydyula/oss-goalos-ai/discussions) for questions
+- [Open an issue](https://github.com/akhilvydyula/oss-goalos-ai/issues) for bugs/features
 
 Thank you for contributing! 🎯

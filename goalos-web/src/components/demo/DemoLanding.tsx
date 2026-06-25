@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { TAGLINE } from "@/lib/constants";
+import { TAGLINE, LIVE_DEMO_URL, GITHUB_REPO_URL } from "@/lib/constants";
 import { asset, MEDIA } from "@/lib/assets";
 import { Monitor, Smartphone, ArrowRight, Code2, Target } from "lucide-react";
 import { DemoReel } from "./DemoReel";
@@ -40,14 +40,24 @@ export function DemoLanding() {
             </div>
             <span className="text-sm font-semibold text-zinc-100">GoalOS AI</span>
           </div>
-          <a
-            href="https://github.com/akhilvydyula/oss-goalos-ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-medium text-zinc-500 hover:text-zinc-300"
-          >
-            GitHub
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href={LIVE_DEMO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-[#22c55e] hover:text-[#4ade80]"
+            >
+              Live demo
+            </a>
+            <a
+              href={GITHUB_REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-zinc-500 hover:text-zinc-300"
+            >
+              GitHub
+            </a>
+          </div>
         </div>
       </header>
 
@@ -109,13 +119,21 @@ export function DemoLanding() {
           Local-first · No API key · Optional browser AI
         </p>
         <a
-          href="https://github.com/akhilvydyula/oss-goalos-ai"
+          href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="mx-auto mt-3 flex w-fit items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300"
         >
           <Code2 className="h-3.5 w-3.5" />
           View source
+        </a>
+        <a
+          href={LIVE_DEMO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mx-auto mt-2 flex w-fit text-xs text-zinc-600 hover:text-[#22c55e]"
+        >
+          {LIVE_DEMO_URL}
         </a>
       </div>
     </div>

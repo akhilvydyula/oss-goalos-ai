@@ -1,6 +1,12 @@
 # GoalOS AI
 
 <p align="center">
+  <a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/"><strong>▶ Live demo</strong></a>
+  &nbsp;·&nbsp;
+  <code>admin@demo.goalos</code> / <code>Demo1234!</code>
+</p>
+
+<p align="center">
   <strong>Turn screen time into goal time.</strong>
 </p>
 

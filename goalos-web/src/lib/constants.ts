@@ -125,6 +125,9 @@ export const SUBTAGLINE =
 export const PRODUCT_PROMISE =
   "Know where your time goes. Know who you are becoming.";
 
+export const LIVE_DEMO_URL = "https://oss-goalos-ai.akhilvydyula1111.workers.dev/";
+export const GITHUB_REPO_URL = "https://github.com/akhilvydyula/oss-goalos-ai";
+
 export const COMMUNITY_CHALLENGES = [
   "7-Day Goal Alignment Sprint",
   "No Night Scrolling Challenge",

@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting! Please search [existing issues](https://github.com/akhilvydyula/goalos-ai/issues) first.
+        Thanks for reporting! Please search [existing issues](https://github.com/akhilvydyula/oss-goalos-ai/issues) first.
 
   - type: dropdown
     id: platform

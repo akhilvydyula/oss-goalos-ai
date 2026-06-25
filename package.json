@@ -13,6 +13,7 @@
   },
   "license": "MIT",
   "author": "Akhil Vydyula",
+  "homepage": "https://oss-goalos-ai.akhilvydyula1111.workers.dev/",
   "scripts": {
     "dev": "npm run dev --prefix goalos-web",
     "build": "npm ci --prefix goalos-web && npm run build --prefix goalos-web",

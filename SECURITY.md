@@ -11,7 +11,7 @@
 
 **Please do not open public GitHub issues for security vulnerabilities.**
 
-1. Go to the [Security tab](https://github.com/akhilvydyula/goalos-ai/security) on the repository
+1. Go to the [Security tab](https://github.com/akhilvydyula/oss-goalos-ai/security) on the repository
 2. Click **Report a vulnerability**
 3. Describe the issue, impact, and steps to reproduce
 
