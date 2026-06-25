@@ -43,20 +43,38 @@
 
 ### 🎬 Promo videos
 
+GitHub README cannot embed `<video>` players — use the **▶ Watch** links below (opens in-browser player).
+
 <table>
 <tr>
-<td width="50%" valign="top">
+<td width="50%" align="center">
 
 **Quick teaser** (~8s)
 
-<video src="goalos-web/public/media/readme/goalos-promo.mp4" width="100%" autoplay muted loop playsinline></video>
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4">
+  <img src="goalos-web/public/media/linkedin/cinematic/01-hook.png" alt="Watch quick teaser" width="100%" />
+</a>
+
+<br /><br />
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4"><strong>▶ Watch teaser</strong></a>
+<br />
+<code>goalos-web/public/media/readme/goalos-promo.mp4</code>
 
 </td>
-<td width="50%" valign="top">
+<td width="50%" align="center">
 
 **Cinematic promo** (~49s)
 
-<video src="goalos-web/public/media/readme/goalos-cinematic-promo.mp4" width="100%" controls playsinline poster="goalos-web/public/media/readme/hero-banner.png"></video>
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4">
+  <img src="goalos-web/public/media/readme/hero-banner.png" alt="Watch cinematic promo" width="100%" />
+</a>
+
+<br /><br />
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4"><strong>▶ Watch cinematic promo</strong></a>
+<br />
+<a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/media/linkedin/goalos-cinematic-promo.mp4">Live CDN link</a>
+<br />
+<code>goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4</code>
 
 </td>
 </tr>
@@ -171,6 +189,7 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## 🔗 Links
 
+- **Cinematic promo:** `goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4`
 - **Live demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/
 - **Web product:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/web/
 - **Mobile demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/mobile/
