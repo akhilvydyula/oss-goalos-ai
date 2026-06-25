@@ -25,6 +25,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/">Live demo</a> ·
+  <a href="docs/RUNBOOK.md">Runbook</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="docs/DEPLOYMENT.md">Deploy (Cloudflare)</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
@@ -44,18 +45,32 @@
 
 <table>
 <tr>
-<td width="50%" valign="top">
+<td width="50%" align="center">
 
 **Quick teaser** (~8s)
 
-<video src="goalos-web/public/media/readme/goalos-promo.mp4" width="100%" autoplay muted loop playsinline></video>
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4">
+  <img src="goalos-web/public/media/linkedin/cinematic/01-hook.png" alt="Watch quick teaser" width="100%" />
+</a>
+
+<br /><br />
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4"><strong>▶ Watch teaser</strong></a>
 
 </td>
-<td width="50%" valign="top">
+<td width="50%" align="center">
 
 **Cinematic promo** (~49s)
 
-<video src="goalos-web/public/media/readme/goalos-cinematic-promo.mp4" width="100%" controls playsinline poster="goalos-web/public/media/readme/hero-banner.png"></video>
+<a href="https://youtu.be/kGyT7l17jHc">
+  <img src="https://img.youtube.com/vi/kGyT7l17jHc/hqdefault.jpg" alt="Watch GoalOS cinematic promo on YouTube" width="100%" />
+</a>
+
+<br /><br />
+<a href="https://youtu.be/kGyT7l17jHc"><strong>▶ Watch on YouTube</strong></a>
+<br />
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4">GitHub file</a>
+ ·
+<a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/media/linkedin/goalos-cinematic-promo.mp4">CDN</a>
 
 </td>
 </tr>
@@ -142,6 +157,7 @@ Goal Setup → Productivity DNA → Usage Tracking → Alignment Score
 | [Getting Started](./docs/GETTING_STARTED.md) | Install & run web + Android |
 | [Architecture](./docs/ARCHITECTURE.md) | System design, data flow, scoring |
 | [Deployment](./docs/DEPLOYMENT.md) | Cloudflare Workers, Android releases |
+| [**Runbook**](./docs/RUNBOOK.md) | Interactive ops deck (swipe-style) |
 | [Contributing](./CONTRIBUTING.md) | How to contribute |
 | [Code of Conduct](./CODE_OF_CONDUCT.md) | Community guidelines |
 | [Security](./SECURITY.md) | Vulnerability reporting |
@@ -169,6 +185,8 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## 🔗 Links
 
+- **Cinematic promo (YouTube):** https://youtu.be/kGyT7l17jHc
+- **Cinematic promo (file):** `goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4`
 - **Live demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/
 - **Web product:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/web/
 - **Mobile demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/mobile/

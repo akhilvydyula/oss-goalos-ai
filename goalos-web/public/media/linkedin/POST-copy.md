@@ -53,8 +53,9 @@ MIT · free forever
 
 ## Media to attach
 
-1. **Image:** `goalos-linkedin-banner.png`
-2. **Video:** `goalos-linkedin-promo.mp4` (15s product reel)
+1. **Video:** [Cinematic promo on YouTube](https://youtu.be/kGyT7l17jHc) (~49s) — best for reach
+2. **Image:** `goalos-linkedin-banner.png`
+3. **Backup video file:** `goalos-cinematic-promo.mp4` (native LinkedIn upload)
 
 ## Posting tips
 

@@ -14,7 +14,7 @@ import {
   Brain,
 } from "lucide-react";
 import { goalosApi } from "@/lib/api/goalos-api";
-import { TAGLINE, SUBTAGLINE, PRODUCT_PROMISE, LIVE_DEMO_URL, GITHUB_REPO_URL } from "@/lib/constants";
+import { TAGLINE, SUBTAGLINE, PRODUCT_PROMISE, LIVE_DEMO_URL, GITHUB_REPO_URL, YOUTUBE_PROMO_URL } from "@/lib/constants";
 
 const productLoop = [
   "Goal Setup",
@@ -206,6 +206,13 @@ export function EnterpriseLanding() {
         </a>
         {" · "}
         <a
+          href="/runbook/"
+          className="hover:text-zinc-400"
+        >
+          Runbook
+        </a>
+        {" · "}
+        <a
           href={LIVE_DEMO_URL}
           target="_blank"
           rel="noopener noreferrer"
@@ -217,6 +224,15 @@ export function EnterpriseLanding() {
         <Link href="/web" className="hover:text-zinc-400">
           Sandbox
         </Link>
+        {" · "}
+        <a
+          href={YOUTUBE_PROMO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-zinc-400"
+        >
+          Watch promo
+        </a>
         {" · "}
         <a
           href={GITHUB_REPO_URL}

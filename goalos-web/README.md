@@ -58,8 +58,8 @@ Static output is in `out/` — deployed to [Cloudflare Workers](https://oss-goal
 | Asset | Path |
 |-------|------|
 | Hero banner | `public/media/readme/hero-banner.png` |
-| Quick teaser video (~8s) | `public/media/readme/goalos-promo.mp4` |
-| Cinematic promo (~49s) | `public/media/readme/goalos-cinematic-promo.mp4` |
+| Quick teaser (~8s) | `public/media/readme/goalos-promo.mp4` |
+| **Cinematic promo (~49s)** | [YouTube](https://youtu.be/kGyT7l17jHc) · `public/media/linkedin/goalos-cinematic-promo.mp4` |
 | Web dashboard | `public/media/readme/app-dashboard.png` |
 | AI Coach | `public/media/readme/app-coach.png` |
 | Mobile demo | `public/media/readme/app-mobile.png` |
@@ -70,7 +70,19 @@ Static output is in `out/` — deployed to [Cloudflare Workers](https://oss-goal
 </p>
 
 <p align="center">
-  <video src="public/media/readme/goalos-promo.mp4" width="640" autoplay muted loop playsinline></video>
+  <a href="https://youtu.be/kGyT7l17jHc">
+    <img src="https://img.youtube.com/vi/kGyT7l17jHc/hqdefault.jpg" alt="Watch GoalOS cinematic promo on YouTube" width="640" />
+  </a>
+  <br /><br />
+  <a href="https://youtu.be/kGyT7l17jHc"><strong>▶ Watch on YouTube (~49s)</strong></a>
+  ·
+  <a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4">GitHub file</a>
+  ·
+  <a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/media/linkedin/goalos-cinematic-promo.mp4">CDN</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4"><strong>▶ Watch quick teaser (~8s)</strong></a>
 </p>
 
 The [landing page](http://localhost:3000) includes an auto-playing product walkthrough and screenshot gallery.
