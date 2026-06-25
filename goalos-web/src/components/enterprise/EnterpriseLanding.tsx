@@ -206,6 +206,13 @@ export function EnterpriseLanding() {
         </a>
         {" · "}
         <a
+          href="/runbook/"
+          className="hover:text-zinc-400"
+        >
+          Runbook
+        </a>
+        {" · "}
+        <a
           href={LIVE_DEMO_URL}
           target="_blank"
           rel="noopener noreferrer"

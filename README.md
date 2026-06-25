@@ -25,6 +25,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/">Live demo</a> ·
+  <a href="docs/RUNBOOK.md">Runbook</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="docs/DEPLOYMENT.md">Deploy (Cloudflare)</a> ·
   <a href="CONTRIBUTING.md">Contributing</a>
@@ -142,6 +143,7 @@ Goal Setup → Productivity DNA → Usage Tracking → Alignment Score
 | [Getting Started](./docs/GETTING_STARTED.md) | Install & run web + Android |
 | [Architecture](./docs/ARCHITECTURE.md) | System design, data flow, scoring |
 | [Deployment](./docs/DEPLOYMENT.md) | Cloudflare Workers, Android releases |
+| [**Runbook**](./docs/RUNBOOK.md) | Interactive ops deck (swipe-style) |
 | [Contributing](./CONTRIBUTING.md) | How to contribute |
 | [Code of Conduct](./CODE_OF_CONDUCT.md) | Community guidelines |
 | [Security](./SECURITY.md) | Vulnerability reporting |
