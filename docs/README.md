@@ -6,6 +6,7 @@
 | [Architecture](./ARCHITECTURE.md) | System design, scoring, data flow |
 | [Deployment](./DEPLOYMENT.md) | Cloudflare Workers, Android releases |
 | [**Runbook**](./RUNBOOK.md) | Interactive ops deck + deploy checklist |
+| [Branching](./BRANCHING.md) | Feature branches + protected `main` |
 
 ## Repository guides
 
