@@ -43,8 +43,6 @@
 
 ### 🎬 Promo videos
 
-GitHub README cannot embed `<video>` players — use the **▶ Watch** links below (opens in-browser player).
-
 <table>
 <tr>
 <td width="50%" align="center">
@@ -57,24 +55,22 @@ GitHub README cannot embed `<video>` players — use the **▶ Watch** links bel
 
 <br /><br />
 <a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/readme/goalos-promo.mp4"><strong>▶ Watch teaser</strong></a>
-<br />
-<code>goalos-web/public/media/readme/goalos-promo.mp4</code>
 
 </td>
 <td width="50%" align="center">
 
 **Cinematic promo** (~49s)
 
-<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4">
-  <img src="goalos-web/public/media/readme/hero-banner.png" alt="Watch cinematic promo" width="100%" />
+<a href="https://youtu.be/kGyT7l17jHc">
+  <img src="https://img.youtube.com/vi/kGyT7l17jHc/hqdefault.jpg" alt="Watch GoalOS cinematic promo on YouTube" width="100%" />
 </a>
 
 <br /><br />
-<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4"><strong>▶ Watch cinematic promo</strong></a>
+<a href="https://youtu.be/kGyT7l17jHc"><strong>▶ Watch on YouTube</strong></a>
 <br />
-<a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/media/linkedin/goalos-cinematic-promo.mp4">Live CDN link</a>
-<br />
-<code>goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4</code>
+<a href="https://github.com/akhilvydyula/oss-goalos-ai/blob/f1/goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4">GitHub file</a>
+ ·
+<a href="https://oss-goalos-ai.akhilvydyula1111.workers.dev/media/linkedin/goalos-cinematic-promo.mp4">CDN</a>
 
 </td>
 </tr>
@@ -189,7 +185,8 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## 🔗 Links
 
-- **Cinematic promo:** `goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4`
+- **Cinematic promo (YouTube):** https://youtu.be/kGyT7l17jHc
+- **Cinematic promo (file):** `goalos-web/public/media/linkedin/goalos-cinematic-promo.mp4`
 - **Live demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/
 - **Web product:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/web/
 - **Mobile demo:** https://oss-goalos-ai.akhilvydyula1111.workers.dev/mobile/

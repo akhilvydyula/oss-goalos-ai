@@ -127,6 +127,7 @@ export const PRODUCT_PROMISE =
 
 export const LIVE_DEMO_URL = "https://oss-goalos-ai.akhilvydyula1111.workers.dev/";
 export const GITHUB_REPO_URL = "https://github.com/akhilvydyula/oss-goalos-ai";
+export const YOUTUBE_PROMO_URL = "https://youtu.be/kGyT7l17jHc";
 
 export const COMMUNITY_CHALLENGES = [
   "7-Day Goal Alignment Sprint",
